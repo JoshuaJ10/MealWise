@@ -71,21 +71,6 @@ export const CedarNotesInterface: React.FC = () => {
 
   return (
     <div className="h-screen bg-amber-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b border-amber-200 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-green-600" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-amber-900">Cedar Notes</h1>
-              <p className="text-sm text-amber-600">AI-controlled notes interface</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content - Notes Area */}
       <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto">
