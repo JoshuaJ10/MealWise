@@ -109,6 +109,7 @@ export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
 		const elements: React.ReactNode[] = [];
 
 		// Create a sorted list of context keys based on their entries' order metadata
+		if (additionalContext) {
 		const contextKeysWithOrder = Object.keys(additionalContext).map((key) => {
 			const value = additionalContext[key];
 			const entries = normalizeToArray(value);
@@ -181,7 +182,7 @@ export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
 		});
 
 		return elements;
-	}, [
+	}}, [
 		additionalContext,
 		mentionProviders,
 		collapsingConfigs,

@@ -65,7 +65,7 @@ export const ChatBubbles: React.FC<ChatBubblesProps> = ({
 			{/* Messages container */}
 			<div className='relative z-20 px-1 py-1'>
 				<AnimatePresence initial={false}>
-					{messages.map((message, index) => (
+					{messages ? messages.map((message, index) => (
 						<motion.div
 							key={message.id}
 							initial={{
@@ -87,7 +87,8 @@ export const ChatBubbles: React.FC<ChatBubblesProps> = ({
 							} ${isConsecutiveMessage(index) ? 'mt-1' : 'mt-2'}`}>
 							<ChatRenderer message={message} />
 						</motion.div>
-					))}
+					))
+					: "none"}
 					{isProcessing && (
 						<div className='py-2'>
 							<ShimmerText text='Thinking...' state='thinking' />
