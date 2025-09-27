@@ -7,8 +7,8 @@ import {
 	useSpell,
 	type ActivationConditions,
 	type CedarStore,
-} from 'cedar-os';
-import { AnimatePresence } from 'motion/react';
+} from '@/lib/cedarMock';
+import { AnimatePresence } from 'framer-motion';
 import Container3D from '../containers/Container3D';
 import type { LucideIcon } from 'lucide-react';
 

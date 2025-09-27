@@ -10,16 +10,16 @@ import {
 } from '@/cedar/components/ui/command';
 import { KeyboardShortcut } from '@/cedar/components/ui/KeyboardShortcut';
 import { EditorContent } from '@tiptap/react';
-import type { ActivationEvent, ActivationMode } from 'cedar-os';
+import type { ActivationEvent, ActivationMode } from '@/lib/cedarMock';
 import {
 	ActivationMode as ActivationModeEnum,
 	cn,
 	useCedarEditor,
 	useMessages,
 	useMultipleSpells,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import { ChevronDown } from 'lucide-react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, motion } from 'framer-motion';
 import React from 'react';
 import { getShortcutDisplay } from './getShortcutDisplay';
 

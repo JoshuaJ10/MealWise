@@ -1,5 +1,5 @@
-import { cn, useStyling, getShadedColor, getLightenedColor } from 'cedar-os';
-import { HTMLMotionProps, motion } from 'motion/react';
+import { cn, useStyling, getShadedColor, getLightenedColor } from '@/lib/cedarMock';
+import { HTMLMotionProps, motion } from 'framer-motion';
 import React from 'react';
 
 interface Flat3dContainerProps extends Omit<HTMLMotionProps<'div'>, 'onDrag'> {

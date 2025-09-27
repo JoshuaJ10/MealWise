@@ -6,7 +6,7 @@ import React, {
 	useRef,
 	useState,
 } from 'react';
-import { useCedarStore, useStyling } from 'cedar-os';
+import { useCedarStore, useStyling } from '@/lib/cedarMock';
 import Container3DButton from '@/cedar/components/containers/Container3DButton';
 import { GripVertical } from 'lucide-react';
 import InsetGlow from '@/cedar/components/ornaments/InsetGlow';

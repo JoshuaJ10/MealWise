@@ -1,15 +1,15 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Cursor, useCursorState } from 'motion-plus-react';
-import { animate, motion, useMotionValue } from 'motion/react';
+import { motion } from 'framer-motion';
+import { animate, motion, useMotionValue } from 'framer-motion';
 import {
 	useStyling,
 	useSpell,
 	Hotkey,
 	ActivationMode,
 	type ActivationConditions,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 // TODO: TooltipText component needs to be created
 // import TooltipText from '@/cedar/components/components/interactions/components/TooltipText';
 
@@ -49,7 +49,7 @@ const QuestioningSpell: React.FC<QuestioningSpellProps> = ({
 	});
 
 	// Cursor animation/state -----------------------------------------------------
-	const state = useCursorState();
+	const state = { targetBoundingBox: null };
 	const rotate = useMotionValue(0);
 
 	// Debounced target tracking --------------------------------------------------
@@ -122,19 +122,13 @@ const QuestioningSpell: React.FC<QuestioningSpellProps> = ({
 			/> */}
 
 			{/* Reticule */}
-			<Cursor
-				magnetic={{ snap: 0.9 }}
-				follow
-				center={{ x: 0.5, y: 0.5 }}
+			<div
 				style={{
 					rotate,
 					width: 38,
 					height: 38,
 					backgroundColor: 'transparent',
 					borderRadius: 0,
-				}}
-				variants={{
-					pressed: { scale: state.targetBoundingBox ? 0.9 : 0.7 },
 				}}>
 				<>
 					<Corner color={highlightColor} top={0} left={0} />
@@ -142,7 +136,7 @@ const QuestioningSpell: React.FC<QuestioningSpellProps> = ({
 					<Corner color={highlightColor} bottom={0} left={0} />
 					<Corner color={highlightColor} bottom={0} right={0} />
 				</>
-			</Cursor>
+			</div>
 
 			{/* Tooltip - TODO: Implement when TooltipText component is available */}
 			{/* {tooltip && state.targetBoundingBox && (

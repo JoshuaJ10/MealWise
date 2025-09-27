@@ -1,5 +1,5 @@
 import { CornerDownLeft as EnterIcon } from 'lucide-react';
-import { Ticker } from 'motion-plus-react';
+import { motion } from 'framer-motion';
 import React from 'react';
 import {
 	useCedarStore,
@@ -8,7 +8,7 @@ import {
 	DialogueOptionsMessage,
 	MultipleChoiceMessage,
 	SliderMessage,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import Flat3dButton from '@/cedar/components/containers/Flat3dButton';
 import Flat3dContainer from '@/cedar/components/containers/Flat3dContainer';
 import { ShimmerText } from '@/cedar/components/text/ShimmerText';
@@ -125,9 +125,8 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 				<div className={containerClasses}>
 					<div className='w-full'>
 						<div className='mb-2'>
-							<Ticker
-								hoverFactor={0}
-								items={tickerMsg.buttons.map((button, bidx) => (
+							<div className="ticker-container">
+								{tickerMsg.buttons.map((button, bidx) => (
 									<Flat3dContainer
 										key={bidx}
 										whileHover={{ scale: 1.05 }}
@@ -153,8 +152,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 										</div>
 									</Flat3dContainer>
 								))}
-								style={{ maskImage: mask }}
-							/>
+							</div>
 						</div>
 						<Flat3dButton
 							className='flex items-center w-full justify-center py-1'

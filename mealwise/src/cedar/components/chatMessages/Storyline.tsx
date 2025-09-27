@@ -1,5 +1,5 @@
 import StorylineEdge from '@/cedar/components/chatMessages/StorylineEdge';
-import { StorylineMessage, StorylineSection } from 'cedar-os';
+import { StorylineMessage, StorylineSection } from '@/lib/cedarMock';
 import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useRef, useState } from 'react';
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { animate, motion, useMotionValue } from 'motion/react';
+import { animate, motion, useMotionValue } from 'framer-motion';
 import { diffWords, diffChars, diffLines } from 'diff';
 
 // TypewriterText component for animated text appearance

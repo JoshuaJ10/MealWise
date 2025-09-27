@@ -4,7 +4,7 @@ import {
 	useCedarStore,
 	cn,
 	DEFAULT_THREAD_ID,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import {
 	DropdownMenu,
 	DropdownMenuContent,

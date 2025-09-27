@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { useStyling } from 'cedar-os';
+import { useStyling } from '@/lib/cedarMock';
 import { Copy, Check } from 'lucide-react';
 
 interface MarkdownRendererProps {

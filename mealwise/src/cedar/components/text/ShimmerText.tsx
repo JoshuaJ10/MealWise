@@ -1,6 +1,6 @@
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import React from 'react';
-import { useStyling } from 'cedar-os';
+import { useStyling } from '@/lib/cedarMock';
 import {
 	Hammer,
 	Check,

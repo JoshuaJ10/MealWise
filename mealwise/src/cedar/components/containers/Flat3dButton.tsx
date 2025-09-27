@@ -1,7 +1,7 @@
 import React from 'react';
-import { HTMLMotionProps } from 'motion/react';
+import { HTMLMotionProps } from 'framer-motion';
 import Flat3dContainer from '@/cedar/components/containers/Flat3dContainer';
-import { cn } from 'cedar-os';
+import { cn } from '@/lib/cedarMock';
 
 export interface Flat3dButtonProps extends HTMLMotionProps<'div'> {
 	/** Optional id forwarded to the outer element */

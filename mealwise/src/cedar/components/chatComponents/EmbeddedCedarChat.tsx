@@ -1,7 +1,7 @@
 import { ChatInput } from '@/cedar/components/chatInput/ChatInput';
 import ChatBubbles from '@/cedar/components/chatMessages/ChatBubbles';
 import Container3D from '@/cedar/components/containers/Container3D';
-import { useCedarStore } from 'cedar-os';
+import { useCedarStore } from '@/lib/cedarMock';
 import { X } from 'lucide-react';
 import React from 'react';
 

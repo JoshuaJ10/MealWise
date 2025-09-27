@@ -4,7 +4,7 @@ import {
 	DialogueOptionsMessage,
 	useCedarStore,
 	cn,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import Flat3dButton from '@/cedar/components/containers/Flat3dButton';
 
 interface DialogueOptionsProps {

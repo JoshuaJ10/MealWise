@@ -1,5 +1,5 @@
-import { cn } from 'cedar-os';
-import { motion } from 'motion/react';
+import { cn } from '@/lib/cedarMock';
+import { motion } from 'framer-motion';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 export interface SidePanelDimensions {

@@ -3,10 +3,10 @@ import ChatBubbles from '@/cedar/components/chatMessages/ChatBubbles';
 import { CollapsedButton } from '@/cedar/components/chatMessages/structural/CollapsedChatButton';
 import Container3D from '@/cedar/components/containers/Container3D';
 import { FloatingContainer } from '@/cedar/components/structural/FloatingContainer';
-import { useCedarStore } from 'cedar-os';
+import { useCedarStore } from '@/lib/cedarMock';
 import { ChatThreadController } from '@/cedar/components/threads/ChatThreadController';
 import { X } from 'lucide-react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence } from 'framer-motion';
 import React from 'react';
 interface FloatingCedarChatProps {
 	side?: 'left' | 'right';
