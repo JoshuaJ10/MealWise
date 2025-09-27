@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { animate, motion } from 'motion/react';
-import { useStyling } from 'cedar-os';
+import { animate, motion } from 'framer-motion';
+import { useStyling } from '@/lib/cedarMock';
 import MarkdownRenderer from '../chatMessages/MarkdownRenderer';
 
 interface TypewriterTextProps {

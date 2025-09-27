@@ -9,10 +9,10 @@ import {
 	type ActivationConditions,
 	type CedarStore,
 	cn,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import Container3D from '@/cedar/components/containers/Container3D';
 // Motion for React
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 
 export interface RadialMenuItem {
 	title: string;

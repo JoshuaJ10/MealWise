@@ -1,7 +1,7 @@
-import { motion, HTMLMotionProps } from 'motion/react';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import React from 'react';
-import { cn } from 'cedar-os';
-import { useStyling } from 'cedar-os';
+import { cn } from '@/lib/cedarMock';
+import { useStyling } from '@/lib/cedarMock';
 
 interface InsetGlowProps {
 	size?: number | string; // width/height, accepts tailwind size or px

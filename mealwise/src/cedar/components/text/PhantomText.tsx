@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { cn } from 'cedar-os';
+import { cn } from '@/lib/cedarMock';
 
 interface PhantomTextProps {
 	/** Number of words to generate */

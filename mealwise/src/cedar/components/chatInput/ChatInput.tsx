@@ -1,13 +1,13 @@
-import { useVoice, cn, useCedarStore, HumanInTheLoopMessage } from 'cedar-os';
+import { useVoice, cn, useCedarStore, HumanInTheLoopMessage } from '@/lib/cedarMock';
 
-import { CedarEditorContent as EditorContent } from 'cedar-os';
+import { CedarEditorContent as EditorContent } from '@/lib/cedarMock';
 import { Code, Image, Mic, SendHorizonal } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import React, { useCallback, useEffect } from 'react';
 
 import './ChatInput.css';
 import { ContextBadgeRow } from '@/cedar/components/chatInput/ContextBadgeRow';
-import { useCedarEditor } from 'cedar-os';
+import { useCedarEditor } from '@/lib/cedarMock';
 import Container3DButton from '@/cedar/components/containers/Container3DButton';
 import { VoiceIndicator } from '@/cedar/components/voice/VoiceIndicator';
 import { KeyboardShortcut } from '@/cedar/components/ui/KeyboardShortcut';

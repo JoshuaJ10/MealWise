@@ -4,8 +4,8 @@ import {
 	createBorderColor,
 	getShadedColor,
 	getTextColorForBackground,
-} from 'cedar-os';
-import { HTMLMotionProps, motion } from 'motion/react';
+} from '@/lib/cedarMock';
+import { HTMLMotionProps, motion } from 'framer-motion';
 import React from 'react';
 
 interface Container3DProps {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { AnimatePresence } from 'motion/react';
-import { useCedarStore } from 'cedar-os';
+import { AnimatePresence } from 'framer-motion';
+import { useCedarStore } from '@/lib/cedarMock';
 import { SidePanelContainer } from '@/cedar/components/structural/SidePanelContainer';
 import { CollapsedButton } from '@/cedar/components/chatMessages/structural/CollapsedChatButton';
 import { ChatInput } from '@/cedar/components/chatInput/ChatInput';

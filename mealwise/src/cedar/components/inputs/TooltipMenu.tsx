@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { cn, useCedarStore } from 'cedar-os';
-import type { CedarStore } from 'cedar-os';
+import { cn, useCedarStore } from '@/lib/cedarMock';
+import type { CedarStore } from '@/lib/cedarMock';
 
 export interface TooltipMenuItem {
 	title: string;

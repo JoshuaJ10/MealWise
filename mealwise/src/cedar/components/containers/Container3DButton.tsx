@@ -1,8 +1,8 @@
 import React from 'react';
-import { HTMLMotionProps } from 'motion/react';
+import { HTMLMotionProps } from 'framer-motion';
 import Container3D from '@/cedar/components/containers/Container3D';
 import GlowingMesh from '@/cedar/components/ornaments/GlowingMesh';
-import { cn } from 'cedar-os';
+import { cn } from '@/lib/cedarMock';
 
 interface Container3DButtonProps {
 	/** Additional Tailwind/CSS classes */

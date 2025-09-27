@@ -1,7 +1,7 @@
 import React from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mic, Volume2, AlertCircle } from 'lucide-react';
-import type { VoiceState } from 'cedar-os';
+import type { VoiceState } from '@/lib/cedarMock';
 
 interface VoiceIndicatorProps {
 	voiceState: Pick<

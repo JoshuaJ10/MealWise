@@ -1,8 +1,8 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { useStyling } from 'cedar-os';
-import { AnimateNumber } from 'motion-plus-react';
-import { useMotionValue, useVelocity, useSpring } from 'motion/react';
+import { useStyling } from '@/lib/cedarMock';
+import { motion } from 'framer-motion';
+import { useMotionValue, useVelocity, useSpring } from 'framer-motion';
 
 import { CornerDownLeft } from 'lucide-react';
 import Container3D from '../containers/Container3D';
@@ -54,9 +54,7 @@ export default function Slider({
 						<></>
 					</Container3D>
 					<div className='absolute -top-8 left-1/2 transform -translate-x-1/2'>
-						<AnimateNumber
-							transition={{ duration: 0.2, ease: 'easeOut' }}
-							locales='en-US'
+						<div
 							className='px-2 py-1 rounded text-xs origin-[0.5px_1.5px]'
 							style={{
 								rotate,
@@ -64,7 +62,7 @@ export default function Slider({
 								backgroundColor: styling.color,
 							}}>
 							{value}
-						</AnimateNumber>
+						</div>
 					</div>
 				</div>
 				{/* Invisible input */}

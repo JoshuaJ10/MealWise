@@ -1,5 +1,5 @@
 import React from 'react';
-import { TodoListMessage, useMessages } from 'cedar-os';
+import { TodoListMessage, useMessages } from '@/lib/cedarMock';
 import { Check } from 'lucide-react';
 
 interface TodoListProps {

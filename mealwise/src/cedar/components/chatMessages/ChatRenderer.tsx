@@ -11,8 +11,8 @@ import {
 	TickerMessage,
 	TodoListMessage,
 	useCedarStore,
-} from 'cedar-os';
-import { Ticker } from 'motion-plus-react';
+} from '@/lib/cedarMock';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 interface ChatRendererProps {
@@ -126,7 +126,13 @@ export const ChatRenderer: React.FC<ChatRendererProps> = ({ message }) => {
 			return (
 				<div className='w-full'>
 					<div className='mb-2'>
-						<Ticker hoverFactor={0} items={items} style={{ maskImage: mask }} />
+						<div className="ticker-container" style={{ maskImage: mask }}>
+							{items.map((item, index) => (
+								<span key={index} className="ticker-item">
+									{item}
+								</span>
+							))}
+						</div>
 					</div>
 				</div>
 			);

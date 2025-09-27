@@ -9,7 +9,7 @@ import {
 	SelectionEvent,
 	ActivationMode,
 	type ActivationConditions,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 
 export interface ExtendedTooltipMenuItem extends TooltipMenuItem {
 	/** If true, this item will spawn a floating input instead of invoking immediately */

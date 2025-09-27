@@ -1,6 +1,6 @@
 import { ShimmerText } from '@/cedar/components/text/ShimmerText';
-import { cn, useCedarStore, useThreadMessages } from 'cedar-os';
-import { AnimatePresence, motion } from 'motion/react';
+import { cn, useCedarStore, useThreadMessages } from '@/lib/cedarMock';
+import { AnimatePresence, motion } from 'framer-motion';
 import React, { useEffect, useLayoutEffect, useRef } from 'react';
 import ChatRenderer from './ChatRenderer';
 

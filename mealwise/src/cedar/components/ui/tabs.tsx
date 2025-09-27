@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import * as TabsPrimitive from '@radix-ui/react-tabs';
-import { cn } from 'cedar-os';
+import { cn } from '@/lib/cedarMock';
 
 function Tabs({
 	className,

@@ -5,7 +5,7 @@ import {
 	useIsPresent,
 	useMotionValue,
 	useTransform,
-} from 'motion/react';
+} from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { Check, X } from 'lucide-react';
 

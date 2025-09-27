@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { ChatInput } from './ChatInput';
-import { cn } from 'cedar-os';
-import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '@/lib/cedarMock';
+import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
 interface FloatingChatInputProps {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { motion } from 'motion/react';
-import { useStyling } from 'cedar-os';
+import { motion } from 'framer-motion';
+import { useStyling } from '@/lib/cedarMock';
 
 interface GradientMeshProps {
 	className?: string;

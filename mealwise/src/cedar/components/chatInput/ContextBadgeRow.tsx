@@ -3,7 +3,7 @@ import {
 	useCedarStore,
 	withClassName,
 	type CedarEditor as Editor,
-} from 'cedar-os';
+} from '@/lib/cedarMock';
 import { X } from 'lucide-react';
 import React from 'react';
 
