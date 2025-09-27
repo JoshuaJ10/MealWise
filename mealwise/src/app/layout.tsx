@@ -15,6 +15,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "MealWise - Smart Shopping Notes",
   description: "AI-powered notes app with intelligent shopping list management",
+  icons: '/MealWise.png',
 };
 
 export default function RootLayout({

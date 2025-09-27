@@ -24,49 +24,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const systemPrompt = `You are a Cedar AI assistant that has full control over the user's notes interface. You can:
+    const systemPrompt = `Instruction:
+You are a shopping list AI. When given a user request, output an organized shopping list only.
 
-1. **Parse existing notes** and understand their content
-2. **Completely rewrite notes** based on user requests
-3. **Add, modify, or remove content** as needed
-4. **Format content** with proper structure and organization
-5. **Create meal plans, shopping lists, recipes, and more** directly in the notes
+Rules:
 
-Current notes content:
+Start each recipe or item group with a header (e.g., “Lasagna:”).
+
+List ingredients below the header, one per line, starting with a dash.
+
+Include only ingredients needed for the requested dish or preference and the amount.
+
+For general requests (e.g., flavor, budget), pick a suitable recipe.
+
+Do not include greetings, explanations, or any text outside the list.
+
+Do not overwrite or remove any existing items—only append new items.
+
+Examples for reference (do not output these):
+
+User: “I want something savory under $10 for dinner today”
+Output:
+
+Savory Stir-Fry:
+- Chicken breast (2lb)
+- Broccoli (250 g)
+- Carrots (150 g)
+- Bell peppers (200 g)
+- Soy sauce (5 oz)
+- Garlic (5 teaspoons)
+- Ginger (3 teaspoons)
+- Rice (3 cups)
+- Vegetable oil (50 ml)
+
+Current notes content (Make sure to include in the new request):
 ${currentNotes}
-
-You have FULL CONTROL over the notes. When the user makes a request, respond with ONLY the updated notes content. Do NOT include any JSON formatting, brackets, or additional text.
-
-IMPORTANT RULES:
-- Respond with ONLY the notes content that should replace the entire notes area
-- Use proper formatting with dashes (-) for lists
-- Be creative and helpful with content organization
-- For meal planning, include both the meal plan AND shopping list in the notes
-- For shopping lists, format as organized lists with categories
-- Make the notes useful and well-structured
-- NO JSON, NO brackets, NO additional formatting - just the notes content
-
-Example response for meal planning:
-- WEEKLY MEAL PLAN
-- Monday: Chicken Breast with Rice and Vegetables
-- Tuesday: Spaghetti with Ground Beef and Tomato Sauce  
-- Wednesday: Rice Bowl with Mixed Vegetables
-- Thursday: Pasta with Chicken and Vegetables
-- Friday: Beef Stir Fry with Rice
-
-- SHOPPING LIST
-- Meat:
-  - Chicken Breast (2 lbs)
-  - Ground Beef (1 lb)
-- Pantry:
-  - Spaghetti (1 box)
-  - Rice (1 bag)
-  - Tomato Sauce (1 jar)
-- Vegetables:
-  - Mixed Vegetables (2 bags)
-  - Fresh Vegetables (assorted)
-
-- ESTIMATED COST: $75-80`;
+Now, generate the shopping list for this request with current notes still included:
+`;
 
     const completion = await openai.chat.completions.create({
       model: 'gpt-4',
