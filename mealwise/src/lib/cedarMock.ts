@@ -37,16 +37,54 @@ export const useVoice = () => ({
   toggleVoice: () => {},
 });
 
-// Mock editor functionality
-export const useCedarEditor = ({ onFocus, onBlur, stream }: any) => ({
-  editor: null,
-  isEditorEmpty: true,
-  handleSubmit: () => {},
-});
+// Real editor functionality
+export const useCedarEditor = ({ onFocus, onBlur, stream }: any) => {
+  const [editorValue, setEditorValue] = React.useState('');
+  const [isFocused, setIsFocused] = React.useState(false);
 
-// Mock editor content component
+  const handleSubmit = () => {
+    if (editorValue.trim()) {
+      // This will be handled by the parent component
+      console.log('Editor submit:', editorValue);
+    }
+  };
+
+  const editor = {
+    commands: {
+      focus: () => setIsFocused(true),
+      blur: () => setIsFocused(false),
+    },
+    value: editorValue,
+    setValue: setEditorValue,
+  };
+
+  return {
+    editor,
+    isEditorEmpty: !editorValue.trim(),
+    handleSubmit,
+  };
+};
+
+// Real editor content component
 export const CedarEditorContent = ({ editor, className }: any) => {
-  return React.createElement('div', { className }, 'Mock Editor');
+  return React.createElement('textarea', {
+    className: className,
+    value: editor?.value || '',
+    onChange: (e: any) => editor?.setValue?.(e.target.value),
+    onFocus: () => editor?.commands?.focus?.(),
+    onBlur: () => editor?.commands?.blur?.(),
+    placeholder: 'Ask me to plan your shopping...',
+    style: {
+      width: '100%',
+      minHeight: '40px',
+      resize: 'none',
+      border: 'none',
+      outline: 'none',
+      background: 'transparent',
+      fontSize: '14px',
+      lineHeight: '1.5',
+    },
+  });
 };
 
 // Mock voice state type

@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useCedarStore } from '@/lib/cedarStore';
 import { SidePanelContainer } from '@/cedar/components/structural/SidePanelContainer';
 import { CollapsedButton } from '@/cedar/components/chatMessages/structural/CollapsedChatButton';
-import { ChatInput } from '@/cedar/components/chatInput/ChatInput';
+import { GroceryChatInput } from './GroceryChatInput';
 import ChatBubbles from '@/cedar/components/chatMessages/ChatBubbles';
 import Container3D from '@/cedar/components/containers/Container3D';
 import { GroceryCedarChat } from './GroceryCedarChat';
@@ -103,11 +103,10 @@ export const GrocerySidePanel: React.FC<GrocerySidePanelProps> = ({
 
 							{/* Chat input - fixed at bottom */}
 							<div className='flex-shrink-0 p-3'>
-								<ChatInput
+								<GroceryChatInput
 									handleFocus={() => {}}
 									handleBlur={() => {}}
 									isInputFocused={false}
-									stream={stream}
 								/>
 							</div>
 						</div>

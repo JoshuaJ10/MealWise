@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useCedarStore } from '@/lib/cedarStore';
 import { useGroceryStore } from '@/store/groceryStore';
-import { groceryApi } from '@/services/groceryApi';
+import { openaiService } from '@/services/openaiService';
 import { GroceryCategory } from '@/types/grocery';
 import { motion } from 'framer-motion';
 import { ShoppingCart, DollarSign, Target, ChefHat, Sparkles } from 'lucide-react';
@@ -97,23 +97,31 @@ export const GroceryCedarChat: React.FC<GroceryCedarChatProps> = ({ className = 
 
     addMessage({
       type: 'assistant',
-      content: `Planning ${servings} servings for $${budget}... Let me find some great meal options for you!`,
+      content: `Planning ${servings} servings for $${budget}... Let me create a meal plan for you!`,
     });
 
-    const mealProducts = await groceryApi.getMealPlanProducts({
-      budget,
-      servings,
-    });
-
-    const groceryItems = groceryApi.convertToGroceryItems(mealProducts, [1, 1, 1, 1, 1, 1, 1, 1]);
-    const totalCost = groceryItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-    addItemsFromApi(groceryItems);
-
-    addMessage({
-      type: 'assistant',
-      content: `✅ **Meal Plan Created!**\n\nI've added ${groceryItems.length} items to your list for ${servings} servings.\n\n**Total Cost: $${totalCost.toFixed(2)}**\n**Budget: $${budget}**\n**Remaining: $${(budget - totalCost).toFixed(2)}**\n\nItems include proteins, vegetables, grains, and pantry staples for a complete meal!`,
-    });
+    try {
+      const response = await openaiService.getMealPlan(budget, servings);
+      
+      if (response.items.length > 0) {
+        addItemsFromApi(response.items);
+        
+        addMessage({
+          type: 'assistant',
+          content: `✅ **Meal Plan Created!**\n\n${response.message}\n\n**Total Cost: $${response.totalCost.toFixed(2)}**\n**Budget: $${budget}**\n**Remaining: $${(budget - response.totalCost).toFixed(2)}**\n\nI've added ${response.items.length} items to your grocery list!`,
+        });
+      } else {
+        addMessage({
+          type: 'assistant',
+          content: response.message || 'I created a meal plan for you, but no specific items were added to your list.',
+        });
+      }
+    } catch (error) {
+      addMessage({
+        type: 'assistant',
+        content: 'Sorry, I encountered an error while planning your meals. Please try again or check your API configuration.',
+      });
+    }
   };
 
   const handleBudgetRequest = async (message: string) => {
@@ -135,36 +143,25 @@ export const GroceryCedarChat: React.FC<GroceryCedarChatProps> = ({ className = 
   };
 
   const handleAddItems = async (message: string) => {
-    // Extract item names from the message
-    const itemsToAdd = [];
-    
-    // Common grocery items to look for
-    const commonItems = [
-      'milk', 'bread', 'eggs', 'chicken', 'beef', 'fish', 'rice', 'pasta',
-      'apples', 'bananas', 'carrots', 'onions', 'potatoes', 'cheese',
-      'yogurt', 'butter', 'oil', 'salt', 'pepper', 'garlic'
-    ];
-
-    for (const item of commonItems) {
-      if (message.includes(item)) {
-        const products = await groceryApi.searchProducts(item, { maxPrice: 10 });
-        if (products.length > 0) {
-          const groceryItem = groceryApi.convertToGroceryItems([products[0]])[0];
-          itemsToAdd.push(groceryItem);
-        }
+    try {
+      const response = await openaiService.generateGroceryList(message, items);
+      
+      if (response.items.length > 0) {
+        addItemsFromApi(response.items);
+        addMessage({
+          type: 'assistant',
+          content: `🛒 **Added ${response.items.length} items to your list!**\n\n${response.message}\n\n${response.items.map(item => `• ${item.name} (${item.quantity}x) - $${item.price.toFixed(2)} each`).join('\n')}`,
+        });
+      } else {
+        addMessage({
+          type: 'assistant',
+          content: response.message || 'I\'d be happy to add items to your list! Try saying something like:\n\n• "Add milk and bread"\n• "Get chicken and rice"\n• "Add some vegetables"',
+        });
       }
-    }
-
-    if (itemsToAdd.length > 0) {
-      addItemsFromApi(itemsToAdd);
+    } catch (error) {
       addMessage({
         type: 'assistant',
-        content: `🛒 **Added ${itemsToAdd.length} items to your list!**\n\n${itemsToAdd.map(item => `• ${item.name} - $${item.price.toFixed(2)}`).join('\n')}`,
-      });
-    } else {
-      addMessage({
-        type: 'assistant',
-        content: `I'd be happy to add items to your list! Try saying something like:\n\n• "Add milk and bread"\n• "Get chicken and rice"\n• "Add some vegetables"`,
+        content: 'Sorry, I encountered an error while adding items. Please try again.',
       });
     }
   };
@@ -189,72 +186,90 @@ export const GroceryCedarChat: React.FC<GroceryCedarChatProps> = ({ className = 
   };
 
   const handleSwapItems = async (message: string) => {
-    // Extract items to swap
-    const swapMatch = message.match(/swap\s+(\w+)\s+for\s+(\w+)/i);
-    if (swapMatch) {
-      const [, fromItem, toItem] = swapMatch;
-      const existingItem = items.find(item => 
-        item.name.toLowerCase().includes(fromItem.toLowerCase())
-      );
-
-      if (existingItem) {
-        const newProducts = await groceryApi.searchProducts(toItem, { maxPrice: existingItem.price * 1.5 });
-        if (newProducts.length > 0) {
-          const newItem = groceryApi.convertToGroceryItems([newProducts[0]])[0];
-          removeItem(existingItem.id);
-          addItem(newItem);
-          
-          addMessage({
-            type: 'assistant',
-            content: `🔄 **Swapped items!**\n\n**Removed:** ${existingItem.name}\n**Added:** ${newItem.name} - $${newItem.price.toFixed(2)}`,
-          });
-        }
+    try {
+      const response = await openaiService.modifyList(message, items);
+      
+      if (response.items.length > 0) {
+        // Remove items that match the swap pattern
+        const itemsToRemove = items.filter(item => 
+          message.toLowerCase().includes(item.name.toLowerCase())
+        );
+        itemsToRemove.forEach(item => removeItem(item.id));
+        
+        // Add new items
+        addItemsFromApi(response.items);
+        
+        addMessage({
+          type: 'assistant',
+          content: `🔄 **Items swapped!**\n\n${response.message}`,
+        });
+      } else {
+        addMessage({
+          type: 'assistant',
+          content: response.message || 'I couldn\'t find items to swap. Please specify which items you\'d like to replace.',
+        });
       }
+    } catch (error) {
+      addMessage({
+        type: 'assistant',
+        content: 'Sorry, I encountered an error while swapping items. Please try again.',
+      });
     }
   };
 
   const handleDietaryRestrictions = async (message: string) => {
-    const isVegetarian = message.includes('vegetarian');
-    const isVegan = message.includes('vegan');
-
-    // Remove meat items for vegetarian/vegan
-    const meatItems = items.filter(item => item.category === 'Meat');
-    if (meatItems.length > 0) {
-      meatItems.forEach(item => removeItem(item.id));
+    try {
+      const response = await openaiService.modifyList(message, items);
+      
+      if (response.items.length > 0) {
+        // Remove non-compliant items
+        const itemsToRemove = items.filter(item => 
+          item.category === 'Meat' && (message.includes('vegetarian') || message.includes('vegan'))
+        );
+        itemsToRemove.forEach(item => removeItem(item.id));
+        
+        // Add compliant alternatives
+        addItemsFromApi(response.items);
+        
+        addMessage({
+          type: 'assistant',
+          content: `🌱 **Dietary preferences applied!**\n\n${response.message}`,
+        });
+      } else {
+        addMessage({
+          type: 'assistant',
+          content: response.message || 'Your list is already compliant with your dietary preferences!',
+        });
+      }
+    } catch (error) {
+      addMessage({
+        type: 'assistant',
+        content: 'Sorry, I encountered an error while applying dietary restrictions. Please try again.',
+      });
     }
-
-    // Add vegetarian alternatives
-    const alternatives = await groceryApi.searchProducts('tofu', { maxPrice: 5 });
-    if (alternatives.length > 0) {
-      const tofuItem = groceryApi.convertToGroceryItems([alternatives[0]])[0];
-      addItem(tofuItem);
-    }
-
-    addMessage({
-      type: 'assistant',
-      content: `🌱 **Made your list ${isVegan ? 'vegan' : 'vegetarian'}!**\n\n${meatItems.length > 0 ? `Removed ${meatItems.length} meat items and added vegetarian alternatives.` : 'Your list is already vegetarian-friendly!'}`,
-    });
   };
 
   const handleSnacksRequest = async (message: string) => {
-    const budgetMatch = message.match(/\$(\d+)/);
-    const maxPrice = budgetMatch ? parseInt(budgetMatch[1]) : 10;
-
-    const snackProducts = await groceryApi.getProductsByCategory('Snacks');
-    const affordableSnacks = snackProducts.filter(p => p.price <= maxPrice).slice(0, 3);
-    
-    if (affordableSnacks.length > 0) {
-      const snackItems = groceryApi.convertToGroceryItems(affordableSnacks);
-      addItemsFromApi(snackItems);
+    try {
+      const response = await openaiService.generateGroceryList(message, items);
       
+      if (response.items.length > 0) {
+        addItemsFromApi(response.items);
+        
+        addMessage({
+          type: 'assistant',
+          content: `🍿 **Added snacks to your list!**\n\n${response.message}\n\n${response.items.map(item => `• ${item.name} (${item.quantity}x) - $${item.price.toFixed(2)} each`).join('\n')}`,
+        });
+      } else {
+        addMessage({
+          type: 'assistant',
+          content: response.message || 'I couldn\'t find suitable snacks. Try adjusting your budget or preferences!',
+        });
+      }
+    } catch (error) {
       addMessage({
         type: 'assistant',
-        content: `🍿 **Added snacks under $${maxPrice}!**\n\n${snackItems.map(item => `• ${item.name} - $${item.price.toFixed(2)}`).join('\n')}`,
-      });
-    } else {
-      addMessage({
-        type: 'assistant',
-        content: `I couldn't find snacks under $${maxPrice}. Try increasing your budget or I can suggest some cheaper alternatives!`,
+        content: 'Sorry, I encountered an error while adding snacks. Please try again.',
       });
     }
   };
