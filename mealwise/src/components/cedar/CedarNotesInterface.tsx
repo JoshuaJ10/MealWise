@@ -90,8 +90,8 @@ export const CedarNotesInterface: React.FC = () => {
       <div className="flex-1 p-6">
         <div className="max-w-4xl mx-auto">
           {/* Notes Editor */}
-          <div className="bg-white rounded-lg border border-amber-200 shadow-sm h-[calc(100vh-200px)]">
-            <div className="p-4 border-b border-amber-200 flex items-center justify-between">
+          <div className="bg-white rounded-lg border border-amber-200 shadow-sm flex flex-col h-[calc(100vh-200px)]">
+            <div className="p-4 border-b border-amber-200 flex items-center justify-between flex-shrink-0">
               <div className="flex items-center gap-3">
                 <h3 className="text-lg font-medium text-amber-900">Notes</h3>
                 <input
@@ -111,12 +111,12 @@ export const CedarNotesInterface: React.FC = () => {
                 Save Note
               </button>
             </div>
-            <div className="p-4 h-full">
+            <div className="flex-1 p-4 overflow-hidden">
               <textarea
                 value={notes}
                 onChange={(e) => updateNotes(e.target.value)}
                 placeholder="Your notes will be controlled by AI. Type a request below to get started..."
-                className="w-full h-full resize-none border-none outline-none text-amber-900 placeholder-amber-500 text-sm leading-relaxed"
+                className="w-full h-full resize-none border-none outline-none text-amber-900 placeholder-amber-500 text-sm leading-relaxed overflow-y-auto"
                 style={{ 
                   fontFamily: 'inherit',
                   wordWrap: 'break-word',
