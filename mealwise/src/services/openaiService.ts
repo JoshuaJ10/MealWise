@@ -6,6 +6,13 @@ export interface OpenAIResponse {
   totalCost: number;
 }
 
+export interface NotesAndGroceryResponse {
+  items: Omit<GroceryItem, 'id'>[];
+  message: string;
+  totalCost: number;
+  notesUpdate?: string;
+}
+
 export class OpenAIService {
   async generateGroceryList(prompt: string, currentItems: GroceryItem[] = []): Promise<OpenAIResponse> {
     try {
@@ -46,6 +53,38 @@ export class OpenAIService {
   async modifyList(action: string, currentItems: GroceryItem[]): Promise<OpenAIResponse> {
     const prompt = `${action}. Current list: ${currentItems.map(item => item.name).join(', ')}`;
     return this.generateGroceryList(prompt, currentItems);
+  }
+
+  async processNotesAndGrocery(prompt: string, currentItems: GroceryItem[] = [], currentNotes: string = ''): Promise<NotesAndGroceryResponse> {
+    try {
+      const response = await fetch('/api/openai-notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt,
+          currentItems,
+          currentNotes,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API error: ${response.status}`);
+      }
+
+      // Get the plain text response
+      const notesContent = await response.text();
+      
+      return {
+        notesUpdate: notesContent,
+        message: 'Notes updated successfully'
+      };
+    } catch (error) {
+      console.error('OpenAI API error:', error);
+      throw new Error('Failed to process notes and grocery list. Please try again.');
+    }
   }
 }
 

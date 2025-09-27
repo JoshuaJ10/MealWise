@@ -61,10 +61,10 @@ export const AddItemForm: React.FC = () => {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="w-full flex items-center justify-center gap-2 p-4 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+        className="w-full flex items-center justify-center gap-2 p-3 border-2 border-dashed border-amber-300 rounded-lg hover:border-green-400 hover:bg-green-50 transition-colors"
       >
-        <Plus className="w-5 h-5 text-gray-400" />
-        <span className="text-gray-600 dark:text-gray-400 font-medium">
+        <Plus className="w-4 h-4 text-amber-500" />
+        <span className="text-amber-700 font-medium text-sm">
           Add New Item
         </span>
       </button>
@@ -76,60 +76,43 @@ export const AddItemForm: React.FC = () => {
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: 'auto' }}
       exit={{ opacity: 0, height: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm"
+      className="bg-white rounded-lg border border-amber-200 p-4"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Item Name *
-          </label>
           <input
             type="text"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="Enter item name"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            placeholder="Item name"
+            className="w-full px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
             required
             autoFocus
           />
         </div>
         
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Quantity
-            </label>
-            <input
-              type="number"
-              min="1"
-              value={formData.quantity}
-              onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Price ($)
-            </label>
-            <input
-              type="number"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Category
-          </label>
+        <div className="grid grid-cols-3 gap-2">
+          <input
+            type="number"
+            min="1"
+            value={formData.quantity}
+            onChange={(e) => setFormData({ ...formData, quantity: parseInt(e.target.value) || 1 })}
+            placeholder="Qty"
+            className="px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            value={formData.price}
+            onChange={(e) => setFormData({ ...formData, price: parseFloat(e.target.value) || 0 })}
+            placeholder="Price"
+            className="px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+          />
           <select
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value as GroceryCategory })}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+            className="px-3 py-2 border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
           >
             {Object.keys(CATEGORY_COLORS).map((category) => (
               <option key={category} value={category}>
@@ -139,44 +122,18 @@ export const AddItemForm: React.FC = () => {
           </select>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Brand (optional)
-          </label>
-          <input
-            type="text"
-            value={formData.brand}
-            onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-            placeholder="Enter brand name"
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-            Notes (optional)
-          </label>
-          <textarea
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            rows={2}
-            placeholder="Add any notes..."
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-          />
-        </div>
-
-        <div className="flex gap-2 pt-2">
+        <div className="flex gap-2">
           <button
             type="submit"
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors text-sm"
           >
-            <Plus className="w-4 h-4" />
-            Add Item
+            <Plus className="w-3.5 h-3.5" />
+            Add
           </button>
           <button
             type="button"
             onClick={handleCancel}
-            className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+            className="px-3 py-2 bg-amber-200 text-amber-700 rounded-md hover:bg-amber-300 transition-colors text-sm"
           >
             Cancel
           </button>
