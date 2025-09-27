@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Send, Sparkles } from 'lucide-react';
+import { Send, Sparkles, Save } from 'lucide-react';
 import { useNotesStore } from '@/store/notesStore';
 
 export const CedarNotesInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { notes, updateNotes } = useNotesStore();
+  const { notes, updateNotes, currentNoteTitle, setCurrentNoteTitle, saveCurrentNote } = useNotesStore();
 
   const handleSubmit = async () => {
     if (!inputValue.trim() || isProcessing) return;
@@ -63,6 +63,12 @@ export const CedarNotesInterface: React.FC = () => {
     { label: 'Budget', prompt: 'Help me stay under $100' },
   ];
 
+  const handleSaveNote = () => {
+    if (notes.trim()) {
+      saveCurrentNote();
+    }
+  };
+
   return (
     <div className="h-screen bg-amber-50 flex flex-col">
       {/* Header */}
@@ -85,8 +91,25 @@ export const CedarNotesInterface: React.FC = () => {
         <div className="max-w-4xl mx-auto">
           {/* Notes Editor */}
           <div className="bg-white rounded-lg border border-amber-200 shadow-sm h-[calc(100vh-200px)]">
-            <div className="p-4 border-b border-amber-200">
-              <h3 className="text-lg font-medium text-amber-900">Notes</h3>
+            <div className="p-4 border-b border-amber-200 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h3 className="text-lg font-medium text-amber-900">Notes</h3>
+                <input
+                  type="text"
+                  value={currentNoteTitle}
+                  onChange={(e) => setCurrentNoteTitle(e.target.value)}
+                  className="px-3 py-1 text-sm border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                  placeholder="Note title..."
+                />
+              </div>
+              <button
+                onClick={handleSaveNote}
+                disabled={!notes.trim()}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                <Save className="w-4 h-4" />
+                Save Note
+              </button>
             </div>
             <div className="p-4 h-full">
               <textarea
