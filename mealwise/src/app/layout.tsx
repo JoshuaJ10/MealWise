@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "MealWise - AI Grocery Shopping Copilot",
-  description: "AI-powered grocery shopping assistant with meal planning and budget management",
+  title: "MealWise - Smart Shopping Notes",
+  description: "AI-powered notes app with intelligent shopping list management",
 };
 
 export default function RootLayout({
