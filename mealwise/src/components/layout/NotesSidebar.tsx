@@ -22,6 +22,11 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
       console.log("fetching notes pt2 - no user or username");
     }
   }, [user, fetchNotes]);
+  useEffect(() => {
+    if (user?.username) {
+      fetchNotes(user);
+    }
+  }, [savedNotes])
 
   // Additional useEffect to handle page refresh
   useEffect(() => {
@@ -47,7 +52,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
   const handleDeleteNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to delete this note?')) {
-      deleteNote(noteId);
+      deleteNote(user, noteId);
     }
   };
 

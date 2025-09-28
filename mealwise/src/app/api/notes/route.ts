@@ -1,3 +1,4 @@
+import { Console } from 'console';
 import { NextRequest, NextResponse } from 'next/server';
 
 const API_BASE = process.env.AWS_NOTES_URL;
@@ -176,7 +177,7 @@ export async function GET(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
     try {
         const body = await request.json();
-
+        console.log("Deleting Note pt2");
         const awsDeleteEvent = {
             httpMethod: "DELETE",
             body: JSON.stringify({
@@ -195,7 +196,7 @@ export async function DELETE(request: NextRequest) {
         });
 
         const data = await response.text();
-
+        console.log('deleted note', data);
         let responseData;
         try {
             responseData = JSON.parse(data);

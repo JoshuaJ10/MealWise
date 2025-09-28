@@ -23,7 +23,7 @@ interface NotesState {
   setCurrentNoteTitle: (title: string) => void;
   saveCurrentNote: (user: User) => void;
   loadNote: (noteId: string) => void;
-  deleteNote: (noteId: string) => void;
+  deleteNote: (user: User, noteId: string) => void;
   createNewNote: () => void;
   getNextNoteNumber: () => number;
   fetchNotes: (user: User) => void;
@@ -147,11 +147,25 @@ export const useNotesStore = create<NotesState>()(
         }
       },
       
-      deleteNote: (noteId) => {
+      deleteNote: async (user, noteId) => {
         const { savedNotes } = get();
         set({
           savedNotes: savedNotes.filter(n => n.id !== noteId),
         });
+        if (user) {
+            console.log("Deleting Note");
+            await fetch(`${API_BASE}`, {
+              method: "DELETE",
+              headers: { 
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                resource: "/notesdb",
+                username: user?.username,
+                noteid: noteId
+              })
+            });
+          }
       },
       
       createNewNote: () => {
