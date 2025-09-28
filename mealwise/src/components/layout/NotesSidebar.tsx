@@ -1,16 +1,25 @@
 'use client';
 
 import React from 'react';
+import { useEffect } from 'react';
 import { useNotesStore, SavedNote } from '@/store/notesStore';
 import { Trash2, FileText, Plus } from 'lucide-react';
 
 interface NotesSidebarProps {
   className?: string;
+  user: { username: string };
 }
 
-export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) => {
-  const { savedNotes, loadNote, deleteNote, createNewNote } = useNotesStore();
+export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user }) => {
+  const { savedNotes, loadNote, deleteNote, createNewNote, fetchNotes } = useNotesStore();
 
+  useEffect(() => {
+    console.log("fectching notes pt1 ");
+    if (user) {
+      console.log("fectching notes pt2 ");
+      fetchNotes(user); // fetch notes from DynamoDB via API Gateway
+    }
+  }, [user, fetchNotes]);
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',

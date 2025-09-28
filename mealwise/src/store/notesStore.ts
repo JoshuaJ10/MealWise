@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+interface User {
+  username: string;
+}
+
 export interface SavedNote {
   id: string;
   title: string;
@@ -17,13 +21,14 @@ interface NotesState {
   setNotes: (notes: string) => void;
   updateNotes: (newNotes: string) => void;
   setCurrentNoteTitle: (title: string) => void;
-  saveCurrentNote: () => void;
+  saveCurrentNote: (user: User) => void;
   loadNote: (noteId: string) => void;
   deleteNote: (noteId: string) => void;
   createNewNote: () => void;
   getNextNoteNumber: () => number;
+  fetchNotes: (user: User) => void;
 }
-
+const API_BASE = "/api/notes";
 export const useNotesStore = create<NotesState>()(
   persist(
     (set, get) => ({
@@ -36,26 +41,68 @@ export const useNotesStore = create<NotesState>()(
       updateNotes: (newNotes) => set({ notes: newNotes }),
       
       setCurrentNoteTitle: (title) => set({ currentNoteTitle: title }),
-      
-      saveCurrentNote: () => {
+      fetchNotes: async (user: User) => {
+        if (!user?.username) return;
+        console.log("trying to fetch");
+        try {
+          const res = await fetch(`${API_BASE}?username=${user.username}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!res.ok) throw new Error("Failed to fetch notes");
+
+          const data: SavedNote[] = await res.json();
+
+          // Update store with fetched notes
+          set({ savedNotes: data });
+        } catch (err) {
+          console.error("Error fetching notes:", err);
+        }
+      },
+
+      saveCurrentNote: async (user: User) => {
         const { notes, currentNoteTitle, currentNoteId, savedNotes } = get();
+        const currUpdatedAt = new Date();
+        console.log(currUpdatedAt);
         if (!notes.trim()) return;
         
         if (currentNoteId) {
           // Update existing note
+          console.log("updating existing note");
           const updatedNotes = savedNotes.map(note => 
             note.id === currentNoteId 
-              ? { ...note, title: currentNoteTitle, content: notes, updatedAt: new Date() }
+              ? { ...note, title: currentNoteTitle, content: notes, updatedAt: currUpdatedAt }
               : note
           );
           
           set({
             savedNotes: updatedNotes,
           });
+          if (user) {
+            await fetch(`${API_BASE}`, {
+              method: "PATCH",
+              headers: { 
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                resource: "/notesdb",
+                username: user?.username,
+                noteid: currentNoteId,
+                title: currentNoteTitle,
+                content: notes,
+                updatedAt: currUpdatedAt
+              })
+            });
+          }
         } else {
           // Create new note
+          const tempNoteId = Date.now().toString();
+          console.log("creating new note");
           const newNote: SavedNote = {
-            id: Date.now().toString(),
+            id: tempNoteId,
             title: currentNoteTitle,
             content: notes,
             createdAt: new Date(),
@@ -68,6 +115,23 @@ export const useNotesStore = create<NotesState>()(
             notes: '',
             currentNoteId: null,
           });
+          if (user) {
+            await fetch(`${API_BASE}`, {
+              method: "POST",
+              headers: { 
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                resource: "/notesdb",
+                username: user?.username,
+                noteid: tempNoteId,
+                title: currentNoteTitle,
+                content: notes,
+                updatedAt: currUpdatedAt,
+                createdAt: currUpdatedAt
+              })
+            });
+          }
         }
       },
       
