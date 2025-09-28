@@ -9,6 +9,7 @@ export function LogoutButton() {
   const router = useRouter();
 
   const handleLogout = () => {
+    // This will clear the encrypted token from cookie and update state
     logout();
     router.push('/landing');
   };

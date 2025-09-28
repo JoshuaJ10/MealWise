@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ export default function Login() {
   const [successMessage, setSuccessMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { login } = useAuthStore();
   
   // Use local API route to avoid CORS issues
   const API_BASE = "/api/auth";
@@ -92,6 +94,16 @@ export default function Login() {
       } else {
         const data = await response.json();
         console.log('Login successful:', data);
+        
+        // Store user data with encrypted token in cookie
+        login(
+          { 
+            username: formData.username, 
+            email: data.email || formData.username // Use email from response or username as fallback
+          },
+          data.accessToken || data.AuthenticationResult?.AccessToken
+        );
+        
         // Redirect to home page after successful login
         router.push('/');
       }

@@ -1,10 +1,38 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CedarNotesInterface } from '@/components/cedar/CedarNotesInterface';
 import { NotesSidebar } from '@/components/layout/NotesSidebar';
+import { useAuthStore } from '@/store/authStore';
 
 export default function Home() {
+  const { isAuthenticated, isLoading, initializeAuth } = useAuthStore();
+  const router = useRouter();
+
+  useEffect(() => {
+    // Initialize authentication from cookie
+    initializeAuth();
+  }, [initializeAuth]);
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/landing');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-amber-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null; // Will redirect to landing page
+  }
+
   return (
     <div className="min-h-screen bg-amber-50 flex">
       {/* Sidebar */}
@@ -12,6 +40,7 @@ export default function Home() {
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
+        {/* Main app content */}
         <CedarNotesInterface />
       </div>
     </div>
