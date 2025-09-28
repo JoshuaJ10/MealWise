@@ -83,7 +83,7 @@ export const CedarNotesInterface: React.FC = () => {
                   type="text"
                   value={currentNoteTitle}
                   onChange={(e) => setCurrentNoteTitle(e.target.value)}
-                  className="px-3 py-1 text-sm border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+                  className="px-3 py-1 text-sm border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
                   placeholder="Note title..."
                 />
               </div>
@@ -138,7 +138,7 @@ export const CedarNotesInterface: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask AI to control your notes... (e.g., 'Plan 5 dinners for $80', 'Add shopping list', 'Create meal plan')"
-              className="flex-1 px-4 py-3 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
+              className="flex-1 px-4 py-3 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
               disabled={isProcessing}
             />
             <button
