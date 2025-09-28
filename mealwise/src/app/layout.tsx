@@ -17,6 +17,11 @@ export const metadata: Metadata = {
   title: "MealWise - Smart Shopping Notes",
   description: "AI-powered notes app with intelligent shopping list management",
   icons: '/MealWise.png',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
