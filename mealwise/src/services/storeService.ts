@@ -121,7 +121,6 @@ class StoreService {
           longitude: location.lng,
         };
       } else {
-        console.error(`Geocoding error for zip ${zipCode}:`, data.status);
         return { latitude: 33.748997, longitude: -84.387985 };
       }
     } catch (error) {
