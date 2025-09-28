@@ -44,13 +44,13 @@ export const NavigationBar: React.FC = () => {
             ) : (
               <>
                 <Link
-                  href="/auth"
+                  href="/login"
                   className="text-sm text-gray-600 hover:text-gray-900 font-medium px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/auth"
+                  href="/signup"
                   className="text-sm bg-green-600 text-white font-medium px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                 >
                   Sign Up
@@ -95,14 +95,14 @@ export const NavigationBar: React.FC = () => {
               ) : (
                 <>
                   <Link
-                    href="/auth"
+                    href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 rounded-md transition-colors"
                   >
                     Login
                   </Link>
                   <Link
-                    href="/auth"
+                    href="/signup"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 text-sm bg-green-600 text-white font-medium hover:bg-green-700 rounded-md transition-colors"
                   >
