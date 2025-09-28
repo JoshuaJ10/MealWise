@@ -80,19 +80,19 @@ export default function Login() {
           password: formData.password
         })
       });
-
-      if (!response.ok) {
-        const errorText = await response.text();
+      
+      const data = await response.json();
+      if (data.statusCode > 299) {
+        const errorText = JSON.parse(data.body);
         let errorMessage = 'Invalid username or password. Please try again.';
         try {
-          const errorData = JSON.parse(errorText);
+          const errorData = errorText;
           errorMessage = errorData.message || errorMessage;
         } catch {
           errorMessage = errorText || errorMessage;
         }
         setErrors({ general: errorMessage });
       } else {
-        const data = await response.json();
         console.log('Login successful:', data);
         
         // Store user data with encrypted token in cookie
