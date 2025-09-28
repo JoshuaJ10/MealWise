@@ -12,6 +12,7 @@ export interface SavedNote {
 interface NotesState {
   notes: string;
   currentNoteTitle: string;
+  currentNoteId: string | null;
   savedNotes: SavedNote[];
   setNotes: (notes: string) => void;
   updateNotes: (newNotes: string) => void;
@@ -19,6 +20,7 @@ interface NotesState {
   saveCurrentNote: () => void;
   loadNote: (noteId: string) => void;
   deleteNote: (noteId: string) => void;
+  createNewNote: () => void;
   getNextNoteNumber: () => number;
 }
 
@@ -27,6 +29,7 @@ export const useNotesStore = create<NotesState>()(
     (set, get) => ({
       notes: '',
       currentNoteTitle: 'Note 1',
+      currentNoteId: null,
       savedNotes: [],
       
       setNotes: (notes) => set({ notes }),
@@ -35,22 +38,37 @@ export const useNotesStore = create<NotesState>()(
       setCurrentNoteTitle: (title) => set({ currentNoteTitle: title }),
       
       saveCurrentNote: () => {
-        const { notes, currentNoteTitle, savedNotes } = get();
+        const { notes, currentNoteTitle, currentNoteId, savedNotes } = get();
         if (!notes.trim()) return;
         
-        const newNote: SavedNote = {
-          id: Date.now().toString(),
-          title: currentNoteTitle,
-          content: notes,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        };
-        
-        set({
-          savedNotes: [...savedNotes, newNote],
-          currentNoteTitle: `Note ${savedNotes.length + 2}`,
-          notes: '',
-        });
+        if (currentNoteId) {
+          // Update existing note
+          const updatedNotes = savedNotes.map(note => 
+            note.id === currentNoteId 
+              ? { ...note, title: currentNoteTitle, content: notes, updatedAt: new Date() }
+              : note
+          );
+          
+          set({
+            savedNotes: updatedNotes,
+          });
+        } else {
+          // Create new note
+          const newNote: SavedNote = {
+            id: Date.now().toString(),
+            title: currentNoteTitle,
+            content: notes,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          };
+          
+          set({
+            savedNotes: [...savedNotes, newNote],
+            currentNoteTitle: `Note ${savedNotes.length + 2}`,
+            notes: '',
+            currentNoteId: null,
+          });
+        }
       },
       
       loadNote: (noteId) => {
@@ -60,6 +78,7 @@ export const useNotesStore = create<NotesState>()(
           set({
             notes: note.content,
             currentNoteTitle: note.title,
+            currentNoteId: noteId,
           });
         }
       },
@@ -71,6 +90,15 @@ export const useNotesStore = create<NotesState>()(
         });
       },
       
+      createNewNote: () => {
+        const { savedNotes } = get();
+        set({
+          notes: '',
+          currentNoteTitle: `Note ${savedNotes.length + 1}`,
+          currentNoteId: null,
+        });
+      },
+      
       getNextNoteNumber: () => {
         const { savedNotes } = get();
         return savedNotes.length + 1;
@@ -78,7 +106,12 @@ export const useNotesStore = create<NotesState>()(
     }),
     {
       name: 'notes-storage',
-      partialize: (state) => ({ savedNotes: state.savedNotes }),
+      partialize: (state) => ({ 
+        savedNotes: state.savedNotes,
+        currentNoteId: state.currentNoteId,
+        currentNoteTitle: state.currentNoteTitle,
+        notes: state.notes,
+      }),
     }
   )
 );

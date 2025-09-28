@@ -9,7 +9,7 @@ interface NotesSidebarProps {
 }
 
 export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) => {
-  const { savedNotes, loadNote, deleteNote, setNotes, setCurrentNoteTitle, getNextNoteNumber } = useNotesStore();
+  const { savedNotes, loadNote, deleteNote, createNewNote } = useNotesStore();
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -32,8 +32,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) =>
   };
 
   const handleNewNote = () => {
-    setNotes('');
-    setCurrentNoteTitle(`Note ${getNextNoteNumber()}`);
+    createNewNote();
   };
 
   return (
