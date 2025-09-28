@@ -34,12 +34,12 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-amber-50 flex">
+    <div className="h-screen bg-amber-50 flex overflow-hidden">
       {/* Sidebar */}
       <NotesSidebar />
       
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col overflow-hidden">
         {/* Main app content */}
         <CedarNotesInterface />
       </div>
