@@ -43,7 +43,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
   };
 
   return (
-    <div className={`w-80 bg-white border-r border-amber-200 flex flex-col h-screen ${className}`}>
+    <div className={`hidden sm:block sm:w-80 bg-white border-r border-amber-200 flex flex-col h-screen ${className}`}>
       {/* Sidebar Header */}
       <div className="p-4 border-b border-amber-200">
         <div className="flex items-center justify-between">
