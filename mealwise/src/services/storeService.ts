@@ -11,10 +11,20 @@ class StoreService {
   extractIngredients(notes: string): Ingredient[] {
     const ingredients: Ingredient[] = [];
     
-    // Simple patterns for common ingredients
+    // More comprehensive ingredient patterns
     const patterns = [
-      // Pattern: "2 lbs chicken breast" - quantity, unit, ingredient
-      /(\d+(?:\.\d+)?)\s*(lbs?|pounds?|oz|ounces?|kg|kilograms?|g|grams?|bag|bags|box|boxes|can|cans|jar|jars|bottle|bottles|package|packages|pkg|pieces?|slices?|cups?|tablespoons?|tsp|teaspoons?|tbsp|tablespoons?)\s+([a-zA-Z\s]+)/gi,
+      // Pattern: "Ground beef (1 lb)" - quantity in parentheses
+      /([a-zA-Z\s]+)\s*\((\d+(?:\.\d+)?)\s*(lbs?|pounds?|oz|ounces?|kg|kilograms?|g|grams?|bag|bags|box|boxes|can|cans|jar|jars|bottle|bottles|package|packages|pkg|pieces?|slices?|cups?|tablespoons?|tsp|teaspoons?|tbsp|tablespoons?|cloves?|large|medium|small|packet|pinch|block|head|bunch)\)/gi,
+      
+      // Pattern: "2 lbs chicken breast" - quantity before ingredient
+      /(\d+(?:\.\d+)?)\s*(lbs?|pounds?|oz|ounces?|kg|kilograms?|g|grams?|bag|bags|box|boxes|can|cans|jar|jars|bottle|bottles|package|packages|pkg|pieces?|slices?|cups?|tablespoons?|tsp|teaspoons?|tbsp|tablespoons?|cloves?|large|medium|small|packet|pinch|block|head|bunch)\s+([a-zA-Z\s]+)/gi,
+      
+      // Pattern: "3lbs of rice" - natural language with "of"
+      /(\d+(?:\.\d+)?)\s*(lbs?|pounds?|oz|ounces?|kg|kilograms?|g|grams?|bag|bags|box|boxes|can|cans|jar|jars|bottle|bottles|package|packages|pkg|pieces?|slices?|cups?|tablespoons?|tsp|teaspoons?|tbsp|tablespoons?|cloves?|large|medium|small|packet|pinch|block|head|bunch)\s+of\s+([a-zA-Z\s]+)/gi,
+      
+      // Pattern: "2 cups of milk" - natural language with "of"
+      /(\d+(?:\.\d+)?)\s*(cups?|tablespoons?|tsp|teaspoons?|tbsp|tablespoons?)\s+of\s+([a-zA-Z\s]+)/gi,
+      
       // Pattern: "chicken breast" - just ingredient name
       /(?:^|\n|,|\s)(chicken\s+(?:breast|thigh|wing|drumstick|ground)|beef\s+(?:ground|steak|roast)|pork\s+(?:chop|tenderloin|ground)|salmon|tuna|cod|shrimp|lobster|crab|turkey\s+(?:breast|ground)|lamb\s+(?:chop|leg|ground)|rice|pasta|spaghetti|noodles|bread|flour|sugar|salt|pepper|garlic|onion|tomato|potato|carrot|broccoli|spinach|lettuce|cheese|milk|eggs|butter|oil|vinegar|soy\s+sauce|olive\s+oil|vegetable\s+oil|canola\s+oil|sesame\s+oil|balsamic\s+vinegar|apple\s+cider\s+vinegar|white\s+vinegar|red\s+wine\s+vinegar|lemon\s+juice|lime\s+juice|orange\s+juice|ginger|basil|oregano|thyme|rosemary|parsley|cilantro|mint|sage|bay\s+leaves|paprika|cumin|coriander|turmeric|curry|chili\s+powder|cayenne|red\s+pepper\s+flakes|black\s+pepper|white\s+pepper|sea\s+salt|kosher\s+salt|table\s+salt|himalayan\s+salt|brown\s+sugar|white\s+sugar|powdered\s+sugar|honey|maple\s+syrup|molasses|vanilla\s+extract|almond\s+extract|baking\s+powder|baking\s+soda|cornstarch|yeast|bread\s+crumbs|panko|almonds|walnuts|pecans|cashews|pistachios|peanuts|sunflower\s+seeds|pumpkin\s+seeds|chia\s+seeds|flax\s+seeds|quinoa|barley|oats|wheat|buckwheat|millet|bulgur|couscous|polenta|grits|beans|black\s+beans|kidney\s+beans|pinto\s+beans|navy\s+beans|garbanzo\s+beans|chickpeas|lentils|split\s+peas|black\s+eyed\s+peas|lima\s+beans|green\s+beans|snap\s+beans|asparagus|artichoke|avocado|bell\s+pepper|jalapeno|serrano|habanero|poblano|anaheim|chipotle|mushrooms|shiitake|portobello|cremini|button\s+mushrooms|oyster\s+mushrooms|enoki|maitake|morel|chanterelle|porcini|truffle|zucchini|yellow\s+squash|butternut\s+squash|acorn\s+squash|spaghetti\s+squash|pumpkin|sweet\s+potato|yam|beet|radish|turnip|rutabaga|parsnip|celery|fennel|leek|scallion|green\s+onion|shallot|cauliflower|brussels\s+sprouts|cabbage|kale|collard\s+greens|swiss\s+chard|arugula|watercress|endive|radicchio|bok\s+choy|napa\s+cabbage|red\s+cabbage|savoy\s+cabbage|corn|peas|edamame|snow\s+peas|sugar\s+snap\s+peas|cucumber|pickle|olives|capers|sun\s+dried\s+tomatoes|roasted\s+red\s+peppers|artichoke\s+hearts|hearts\s+of\s+palm|water\s+chestnuts|bamboo\s+shoots|bean\s+sprouts|alfalfa\s+sprouts|broccoli\s+sprouts|radish\s+sprouts|mung\s+bean\s+sprouts|apples|bananas|oranges|lemons|limes|grapefruit|grapes|strawberries|blueberries|raspberries|blackberries|cranberries|cherries|peaches|pears|plums|apricots|nectarines|pineapple|mango|papaya|kiwi|passion\s+fruit|dragon\s+fruit|star\s+fruit|pomegranate|figs|dates|raisins|prunes|dried\s+cranberries|dried\s+cherries|dried\s+apricots|dried\s+mango|dried\s+pineapple|dried\s+banana|dried\s+apple|dried\s+pear|dried\s+peach|dried\s+plum|dried\s+fig|dried\s+date|dried\s+raisin|dried\s+prune|nuts|seeds|grains|cereals|breads|crackers|chips|popcorn|pretzels|trail\s+mix|granola|muesli|protein\s+bars|energy\s+bars|breakfast\s+bars|cereal\s+bars|fruit\s+bars|nut\s+bars|seed\s+bars|dairy|milk|cheese|yogurt|butter|cream|sour\s+cream|cream\s+cheese|cottage\s+cheese|ricotta|mozzarella|cheddar|swiss|provolone|parmesan|romano|asiago|gouda|brie|camembert|feta|goat\s+cheese|blue\s+cheese|gorgonzola|roquefort|stilton|manchego|pecorino|gruyere|emmental|jarlsberg|havarti|muenster|colby|monterey\s+jack|pepper\s+jack|string\s+cheese|cream\s+cheese|mascarpone|marscapone|burrata|bocconcini|fresh\s+mozzarella|buffalo\s+mozzarella|smoked\s+mozzarella|low\s+fat\s+mozzarella|part\s+skim\s+mozzarella|whole\s+milk\s+mozzarella|skim\s+milk|1%\s+milk|2%\s+milk|whole\s+milk|buttermilk|almond\s+milk|soy\s+milk|oat\s+milk|coconut\s+milk|rice\s+milk|hemp\s+milk|cashew\s+milk|macadamia\s+milk|hazelnut\s+milk|pistachio\s+milk|walnut\s+milk|pecan\s+milk|brazil\s+nut\s+milk|pumpkin\s+seed\s+milk|sunflower\s+seed\s+milk|flax\s+milk|chia\s+milk|quinoa\s+milk|spelt\s+milk|kamut\s+milk|amaranth\s+milk|teff\s+milk|millet\s+milk|buckwheat\s+milk|barley\s+milk|rye\s+milk|triticale\s+milk|freekeh\s+milk|bulgur\s+milk|couscous\s+milk|polenta\s+milk|grits\s+milk|eggs|chicken\s+eggs|duck\s+eggs|quail\s+eggs|goose\s+eggs|turkey\s+eggs|ostrich\s+eggs|emu\s+eggs|rhea\s+eggs|cassowary\s+eggs|kiwi\s+eggs|penguin\s+eggs|seagull\s+eggs|pigeon\s+eggs|dove\s+eggs|pheasant\s+eggs|partridge\s+eggs|grouse\s+eggs|ptarmigan\s+eggs|woodcock\s+eggs|snipe\s+eggs|rail\s+eggs|coot\s+eggs|moorhen\s+eggs|waterhen\s+eggs|gallinule\s+eggs|swamphen\s+eggs|purple\s+swamphen\s+eggs|grey\s+headed\s+swamphen\s+eggs|white\s+breasted\s+waterhen\s+eggs|common\s+moorhen\s+eggs|eurasian\s+coot\s+eggs|american\s+coot\s+eggs|red\s+knot\s+eggs|sanderling\s+eggs|dunlin\s+eggs|curlew\s+sandpiper\s+eggs|little\s+stint\s+eggs|temminck's\s+stint\s+eggs|least\s+sandpiper\s+eggs|white\s+rumped\s+sandpiper\s+eggs|baird's\s+sandpiper\s+eggs|pectoral\s+sandpiper\s+eggs|semipalmated\s+sandpiper\s+eggs|western\s+sandpiper\s+eggs|long\s+billed\s+dowitcher\s+eggs|short\s+billed\s+dowitcher\s+eggs|stilt\s+sandpiper\s+eggs|buff\s+breasted\s+sandpiper\s+eggs|spotted\s+sandpiper\s+eggs|solitary\s+sandpiper\s+eggs|green\s+sandpiper\s+eggs|wood\s+sandpiper\s+eggs|common\s+sandpiper\s+eggs|spotted\s+redshank\s+eggs|common\s+redshank\s+eggs|marsh\s+sandpiper\s+eggs|common\s+greenshank\s+eggs|lesser\s+yellowlegs\s+eggs|greater\s+yellowlegs\s+eggs|willet\s+eggs|ruddy\s+turnstone\s+eggs|black\s+turnstone\s+eggs|surfbird\s+eggs|red\s+knot\s+eggs|sanderling\s+eggs|dunlin\s+eggs|curlew\s+sandpiper\s+eggs|little\s+stint\s+eggs|temminck's\s+stint\s+eggs|least\s+sandpiper\s+eggs|white\s+rumped\s+sandpiper\s+eggs|baird's\s+sandpiper\s+eggs|pectoral\s+sandpiper\s+eggs|semipalmated\s+sandpiper\s+eggs|western\s+sandpiper\s+eggs|long\s+billed\s+dowitcher\s+eggs|short\s+billed\s+dowitcher\s+eggs|stilt\s+sandpiper\s+eggs|buff\s+breasted\s+sandpiper\s+eggs|spotted\s+sandpiper\s+eggs|solitary\s+sandpiper\s+eggs|green\s+sandpiper\s+eggs|wood\s+sandpiper\s+eggs|common\s+sandpiper\s+eggs|spotted\s+redshank\s+eggs|common\s+redshank\s+eggs|marsh\s+sandpiper\s+eggs|common\s+greenshank\s+eggs|lesser\s+yellowlegs\s+eggs|greater\s+yellowlegs\s+eggs|willet\s+eggs|ruddy\s+turnstone\s+eggs|black\s+turnstone\s+eggs|surfbird\s+eggs)/gi,
     ];
@@ -22,16 +32,33 @@ class StoreService {
     patterns.forEach(pattern => {
       let match;
       while ((match = pattern.exec(notes)) !== null) {
-        const quantity = match[1] || '1';
-        const unit = match[2] || '';
-        const name = match[3] || match[1];
+        let quantity, unit, name;
+        
+        if (pattern.source.includes('\\(')) {
+          // Pattern 1: "Ground beef (1 lb)"
+          name = match[1];
+          quantity = match[2];
+          unit = match[3];
+        } else if (pattern.source.includes('\\d+')) {
+          // Pattern 2: "2 lbs chicken breast" or Pattern 3: "3lbs of rice"
+          quantity = match[1];
+          unit = match[2];
+          name = match[3];
+        } else {
+          // Pattern 4: "chicken breast"
+          name = match[1];
+          quantity = '1';
+          unit = '';
+        }
         
         if (name && name.trim().length > 2) {
-          ingredients.push({
+          const ingredient = {
             name: name.trim().toLowerCase(),
             quantity: quantity,
             unit: unit,
-          });
+          };
+          console.log('Extracted ingredient:', ingredient); // Debug log
+          ingredients.push(ingredient);
         }
       }
     });
@@ -41,6 +68,7 @@ class StoreService {
       index === self.findIndex(i => i.name === ingredient.name)
     );
 
+    console.log('Final ingredients:', uniqueIngredients); // Debug log
     return uniqueIngredients;
   }
 
@@ -48,9 +76,16 @@ class StoreService {
    * Get user's current location
    */
   async getCurrentLocation(): Promise<{ latitude: number; longitude: number }> {
+    // For now, return a default location (Atlanta, GA)
+    // In production, you would implement proper geolocation with fallback
+    return { latitude: 33.748997, longitude: -84.387985 };
+    
+    // Uncomment below for real geolocation (with proper error handling):
+    /*
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
-        reject(new Error('Geolocation is not supported by this browser.'));
+        console.warn('Geolocation not supported, using default location');
+        resolve({ latitude: 33.748997, longitude: -84.387985 });
         return;
       }
 
@@ -62,15 +97,17 @@ class StoreService {
           });
         },
         (error) => {
-          reject(new Error(`Geolocation error: ${error.message}`));
+          console.warn(`Geolocation error: ${error.message}, using default location`);
+          resolve({ latitude: 33.748997, longitude: -84.387985 });
         },
         {
-          enableHighAccuracy: true,
-          timeout: 10000,
+          enableHighAccuracy: false,
+          timeout: 5000,
           maximumAge: 300000, // 5 minutes
         }
       );
     });
+    */
   }
 
   /**
@@ -107,21 +144,106 @@ class StoreService {
    * Get prices for ingredients from specific stores
    */
   async getIngredientPrices(ingredients: Ingredient[], stores: Store[]): Promise<StorePrice[]> {
-    // For now, return mock data
+    // For now, return mock data with realistic prices
     // In production, you would call Kroger and Walmart APIs here
     
     const prices: StorePrice[] = [];
     
+    // Realistic price ranges for common ingredients
+    const getRealisticPrice = (ingredientName: string, unit: string): number => {
+      const name = ingredientName.toLowerCase();
+      
+      // Meat prices (per lb)
+      if (name.includes('chicken') || name.includes('beef') || name.includes('pork')) {
+        return Math.random() * 2 + 3; // $3-$5 per lb
+      }
+      
+      // Seafood prices (per lb)
+      if (name.includes('salmon') || name.includes('shrimp') || name.includes('seafood')) {
+        return Math.random() * 3 + 6; // $6-$9 per lb
+      }
+      
+      // Vegetables (per lb or unit)
+      if (name.includes('onion') || name.includes('garlic') || name.includes('pepper') || 
+          name.includes('broccoli') || name.includes('carrot') || name.includes('tomato')) {
+        return Math.random() * 1.5 + 0.5; // $0.50-$2 per lb
+      }
+      
+      // Grains and pasta
+      if (name.includes('rice') || name.includes('pasta') || name.includes('spaghetti')) {
+        return Math.random() * 1 + 1; // $1-$2 per lb
+      }
+      
+      // Dairy
+      if (name.includes('cheese') || name.includes('milk') || name.includes('butter')) {
+        return Math.random() * 2 + 2; // $2-$4 per unit
+      }
+      
+      // Oils and condiments
+      if (name.includes('oil') || name.includes('vinegar') || name.includes('sauce')) {
+        return Math.random() * 1.5 + 1; // $1-$2.50 per unit
+      }
+      
+      // Herbs and spices
+      if (name.includes('basil') || name.includes('parsley') || name.includes('cilantro') || 
+          name.includes('saffron') || name.includes('seasoning')) {
+        return Math.random() * 2 + 1; // $1-$3 per unit
+      }
+      
+      // Tortillas and bread
+      if (name.includes('tortilla') || name.includes('bread')) {
+        return Math.random() * 1 + 1.5; // $1.50-$2.50 per package
+      }
+      
+      // Default price for other items
+      return Math.random() * 1.5 + 1; // $1-$2.50 per unit
+    };
+    
     ingredients.forEach(ingredient => {
       stores.forEach(store => {
-        // Mock price generation for unit price
-        const unitPrice = Math.random() * 5 + 1; // $1-$6 per unit
-        const priceVariation = (Math.random() - 0.5) * 0.5; // ±$0.25 variation
-        const finalUnitPrice = Math.round((unitPrice + priceVariation) * 100) / 100;
+        // Get realistic unit price based on ingredient type
+        const baseUnitPrice = getRealisticPrice(ingredient.name, ingredient.unit || '');
         
-        // Calculate total price based on quantity
-        const quantity = parseFloat(ingredient.quantity || '1');
-        const totalPrice = finalUnitPrice * quantity;
+        // Add small store variation (±10%)
+        const variation = (Math.random() - 0.5) * 0.2; // ±10%
+        const finalUnitPrice = Math.round((baseUnitPrice + variation) * 100) / 100;
+        
+        // Calculate total price based on quantity with proper unit conversion
+        const quantityStr = ingredient.quantity || '1';
+        const quantity = isNaN(parseFloat(quantityStr)) ? 1 : parseFloat(quantityStr);
+        const unit = ingredient.unit || '';
+        
+        // Convert units to consistent pricing (per lb or per unit)
+        let adjustedQuantity = quantity;
+        let adjustedUnitPrice = finalUnitPrice;
+        
+        if (unit.toLowerCase().includes('g') || unit.toLowerCase().includes('gram')) {
+          // Convert grams to pounds (1 lb = 453.592 g)
+          adjustedQuantity = quantity / 453.592;
+          adjustedUnitPrice = finalUnitPrice; // Price is already per lb
+        } else if (unit.toLowerCase().includes('kg') || unit.toLowerCase().includes('kilogram')) {
+          // Convert kg to pounds (1 kg = 2.20462 lbs)
+          adjustedQuantity = quantity * 2.20462;
+          adjustedUnitPrice = finalUnitPrice; // Price is already per lb
+        } else if (unit.toLowerCase().includes('oz') || unit.toLowerCase().includes('ounce')) {
+          // Convert oz to pounds (1 lb = 16 oz)
+          adjustedQuantity = quantity / 16;
+          adjustedUnitPrice = finalUnitPrice; // Price is already per lb
+        } else if (unit.toLowerCase().includes('cup')) {
+          // For cups, use a different pricing approach
+          adjustedQuantity = quantity;
+          adjustedUnitPrice = finalUnitPrice * 0.5; // Cups are typically smaller portions
+        } else if (unit.toLowerCase().includes('tablespoon') || unit.toLowerCase().includes('tbsp')) {
+          // For tablespoons, use even smaller pricing
+          adjustedQuantity = quantity;
+          adjustedUnitPrice = finalUnitPrice * 0.1; // Tablespoons are very small portions
+        } else if (unit.toLowerCase().includes('teaspoon') || unit.toLowerCase().includes('tsp')) {
+          // For teaspoons, use very small pricing
+          adjustedQuantity = quantity;
+          adjustedUnitPrice = finalUnitPrice * 0.05; // Teaspoons are tiny portions
+        }
+        
+        const totalPrice = adjustedUnitPrice * adjustedQuantity;
         
         prices.push({
           storeId: store.id,
@@ -198,7 +320,9 @@ class StoreService {
       if (ingredientPrices.length > 0) {
         // Use the total price (already calculated for the quantity)
         const cheapestTotalPrice = Math.min(...ingredientPrices.map(p => p.price));
-        total += cheapestTotalPrice;
+        if (!isNaN(cheapestTotalPrice)) {
+          total += cheapestTotalPrice;
+        }
       }
     });
     

@@ -52,6 +52,12 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
     return [...new Set(searchResult.prices.map(p => p.ingredient))];
   };
 
+  const getParsedIngredients = (): string[] => {
+    if (!notes.trim()) return [];
+    const ingredients = storeService.extractIngredients(notes);
+    return ingredients.map(ing => ing.name);
+  };
+
   if (!isVisible) return null;
 
   return (
@@ -131,35 +137,44 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
 
                   {/* Store Prices */}
                   <div className="space-y-1">
-                    {storePrices.map((price, index) => (
-                      <div key={index} className="flex items-center justify-between text-sm">
-                        <div className="flex items-center gap-2">
-                          <span className="text-gray-700 capitalize">
-                            {price.ingredient}
-                            {price.quantity > 1 && (
-                              <span className="text-gray-500 ml-1">
-                                ({price.quantity} {price.unit})
-                              </span>
+                    {getParsedIngredients().map((ingredient) => {
+                      const storePrices = getIngredientPrices(ingredient);
+                      const storePrice = storePrices.find(p => p.storeId === store.id);
+                      
+                      return (
+                        <div key={ingredient} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-gray-700 capitalize">
+                              {ingredient}
+                              {storePrice && storePrice.quantity > 1 && (
+                                <span className="text-gray-500 ml-1">
+                                  ({storePrice.quantity} {storePrice.unit})
+                                </span>
+                              )}
+                            </span>
+                            {storePrice ? (
+                              storePrice.availability ? (
+                                <CheckCircle className="w-3 h-3 text-green-500" />
+                              ) : (
+                                <XCircle className="w-3 h-3 text-red-500" />
+                              )
+                            ) : (
+                              <XCircle className="w-3 h-3 text-gray-400" />
                             )}
-                          </span>
-                          {price.availability ? (
-                            <CheckCircle className="w-3 h-3 text-green-500" />
-                          ) : (
-                            <XCircle className="w-3 h-3 text-red-500" />
-                          )}
-                        </div>
-                        <div className="text-right">
-                          <span className={`font-medium ${
-                            price.availability ? 'text-gray-900' : 'text-red-500'
-                          }`}>
-                            {price.availability ? `$${price.price.toFixed(2)}` : 'Out of Stock'}
-                          </span>
-                          <div className="text-xs text-gray-500">
-                            {price.availability && `$${price.unitPrice.toFixed(2)} per ${price.unit}`}
+                          </div>
+                          <div className="text-right">
+                            <span className={`font-medium ${
+                              storePrice && storePrice.availability ? 'text-gray-900' : 'text-gray-500'
+                            }`}>
+                              {storePrice && storePrice.availability 
+                                ? `$${storePrice.price.toFixed(2)}` 
+                                : 'Not Found'
+                              }
+                            </span>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               );
@@ -167,11 +182,11 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
 
             {/* Ingredient Summary */}
             <div className="border-t border-amber-200 pt-4">
-              <h4 className="font-medium text-gray-900 mb-2">Ingredients Found</h4>
+              <h4 className="font-medium text-gray-900 mb-2">All Ingredients</h4>
               <div className="space-y-1">
-                {getUniqueIngredients().map((ingredient) => {
+                {getParsedIngredients().map((ingredient) => {
                   const prices = getIngredientPrices(ingredient);
-                  const cheapestPrice = Math.min(...prices.map(p => p.price));
+                  const cheapestPrice = prices.length > 0 ? Math.min(...prices.map(p => p.price)) : null;
                   const cheapestStore = prices.find(p => p.price === cheapestPrice);
                   
                   return (
@@ -186,10 +201,10 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
                       </span>
                       <div className="text-right">
                         <span className="font-medium text-gray-900">
-                          ${cheapestPrice.toFixed(2)}
+                          {cheapestPrice ? `$${cheapestPrice.toFixed(2)}` : 'Not Found'}
                         </span>
                         <div className="text-xs text-gray-500">
-                          at {cheapestStore?.storeName}
+                          {cheapestStore ? `at ${cheapestStore.storeName}` : 'No stores'}
                         </div>
                       </div>
                     </div>
