@@ -2,9 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Send, Sparkles, Save, ShoppingCart, FileText } from 'lucide-react';
 import { useNotesStore } from '@/store/notesStore';
+import { useAuthStore } from '@/store/authStore';
+import { useRouter } from 'next/navigation';
 import { StoreSidebar } from '@/components/layout/StoreSidebar';
 
 export const CedarNotesInterface: React.FC = () => {
+  const { user } = useAuthStore();
+  const router = useRouter();
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStoreSidebarOpen, setIsStoreSidebarOpen] = useState(false);
@@ -68,7 +72,13 @@ export const CedarNotesInterface: React.FC = () => {
 
   const handleSaveNote = () => {
     if (notes.trim()) {
-      saveCurrentNote();
+      if (user) {
+        console.log("Saving Notes pt 1");
+        saveCurrentNote(user);
+      } else {
+        console.log("Must be logged in to save notes");
+        router.push('/?message=Login/Register to save notes!');
+      }
     }
   };
 

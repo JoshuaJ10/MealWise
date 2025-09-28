@@ -1,16 +1,23 @@
 'use client';
 
 import React from 'react';
+import { useEffect } from 'react';
 import { useNotesStore, SavedNote } from '@/store/notesStore';
 import { Trash2, FileText, Plus } from 'lucide-react';
 
 interface NotesSidebarProps {
   className?: string;
+  user: { username: string };
 }
 
-export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) => {
-  const { savedNotes, loadNote, deleteNote, createNewNote } = useNotesStore();
+export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user }) => {
+  const { savedNotes, loadNote, deleteNote, createNewNote, fetchNotes } = useNotesStore();
 
+  useEffect(() => {
+    if (user?.username) {
+      fetchNotes(user); // fetch notes from DynamoDB via API Gateway
+    }
+  }, [user?.username]); // Only fetch when username changes
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -27,7 +34,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) =>
   const handleDeleteNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
     if (confirm('Are you sure you want to delete this note?')) {
-      deleteNote(noteId);
+      deleteNote(user, noteId);
     }
   };
 
@@ -53,13 +60,13 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) =>
           </button>
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          {savedNotes.length} note{savedNotes.length !== 1 ? 's' : ''}
+          {Array.isArray(savedNotes) ? savedNotes.length : 0} note{Array.isArray(savedNotes) && savedNotes.length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Notes List */}
       <div className="flex-1 overflow-y-auto">
-        {savedNotes.length === 0 ? (
+        {!Array.isArray(savedNotes) || savedNotes.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
             <p className="text-sm">No saved notes yet</p>
@@ -69,7 +76,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) =>
           </div>
         ) : (
           <div className="p-2">
-            {savedNotes
+            {Array.isArray(savedNotes) && savedNotes
               .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
               .map((note) => (
                 <div
