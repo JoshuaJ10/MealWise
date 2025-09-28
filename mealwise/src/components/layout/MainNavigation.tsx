@@ -3,13 +3,21 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useAuthStore } from '@/store/authStore';
 
 export const MainNavigation: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+  const { isAuthenticated, user, logout } = useAuthStore();
 
   const isActive = (path: string) => pathname === path;
+
+  const handleLogout = () => {
+    logout(); // This will clear the cookie and update state
+    router.push('/landing');
+  };
 
   return (
     <nav className="bg-white shadow-sm border-b border-amber-200 sticky top-0 z-50">
@@ -39,23 +47,36 @@ export const MainNavigation: React.FC = () => {
             >
               Notes
             </Link>
-            <div className="flex items-center space-x-2">
-              <Link
-                href="/auth"
-                className="text-sm text-gray-600 hover:text-gray-900 font-medium px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
-              >
-                Login
-              </Link>
-              <Link
-                href="/auth"
-                className="text-sm bg-green-600 text-white font-medium px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
-              >
-                Sign Up
-              </Link>
-            </div>
+            {isAuthenticated ? (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-gray-600">
+                  Welcome, <span className="font-medium text-gray-900">{user?.username}</span>
+                </span>
+                <button
+                  onClick={handleLogout}
+                  className="text-sm bg-red-600 text-white font-medium px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Link
+                  href="/login"
+                  className="text-sm text-gray-600 hover:text-gray-900 font-medium px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/signup"
+                  className="text-sm bg-green-600 text-white font-medium px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            )}
           </div>
 
-          {/* Mobile menu button */}
           <div className="md:hidden">
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -88,20 +109,36 @@ export const MainNavigation: React.FC = () => {
                 Notes
               </Link>
               <div className="pt-2 border-t border-gray-200">
-                <Link
-                  href="/auth"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 rounded-md transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/auth"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="block px-3 py-2 text-sm bg-green-600 text-white font-medium hover:bg-green-700 rounded-md transition-colors"
-                >
-                  Sign Up
-                </Link>
+                {isAuthenticated ? (
+                  <>
+                    <div className="px-3 py-2 text-sm text-gray-600">
+                      Welcome, <span className="font-medium text-gray-900">{user?.username}</span>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-3 py-2 text-sm bg-red-600 text-white font-medium hover:bg-red-700 rounded-md transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href="/login"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 rounded-md transition-colors"
+                    >
+                      Login
+                    </Link>
+                    <Link
+                      href="/signup"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="block px-3 py-2 text-sm bg-green-600 text-white font-medium hover:bg-green-700 rounded-md transition-colors"
+                    >
+                      Sign Up
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -2,14 +2,14 @@
 
 import React from 'react';
 import { useNotesStore, SavedNote } from '@/store/notesStore';
-import { Trash2, FileText } from 'lucide-react';
+import { Trash2, FileText, Plus } from 'lucide-react';
 
 interface NotesSidebarProps {
   className?: string;
 }
 
 export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) => {
-  const { savedNotes, loadNote, deleteNote } = useNotesStore();
+  const { savedNotes, loadNote, deleteNote, setNotes, setCurrentNoteTitle, getNextNoteNumber } = useNotesStore();
 
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
@@ -31,14 +31,28 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '' }) =>
     }
   };
 
+  const handleNewNote = () => {
+    setNotes('');
+    setCurrentNoteTitle(`Note ${getNextNoteNumber()}`);
+  };
+
   return (
-    <div className={`w-80 bg-white border-r border-amber-200 flex flex-col ${className}`}>
+    <div className={`w-80 bg-white border-r border-amber-200 flex flex-col h-screen ${className}`}>
       {/* Sidebar Header */}
       <div className="p-4 border-b border-amber-200">
-        <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-          <FileText className="w-5 h-5 text-green-600" />
-          Saved Notes
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-green-600" />
+            Saved Notes
+          </h2>
+          <button
+            onClick={handleNewNote}
+            className="w-8 h-8 bg-green-600 hover:bg-green-700 text-white rounded-full flex items-center justify-center transition-colors shadow-sm hover:shadow-md"
+            title="Create new note"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
         <p className="text-sm text-gray-600 mt-1">
           {savedNotes.length} note{savedNotes.length !== 1 ? 's' : ''}
         </p>

@@ -2,17 +2,17 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 
 export const NavigationBar: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = () => {
-    logout();
-    router.push('/');
+    logout(); // This will clear the cookie and update state
+    router.push('/landing');
   };
 
   return (
@@ -32,11 +32,11 @@ export const NavigationBar: React.FC = () => {
             {isAuthenticated ? (
               <>
                 <span className="text-sm text-gray-600">
-                  Welcome, {user?.firstName || user?.email}
+                  Welcome, <span className="font-medium text-gray-900">{user?.username}</span>
                 </span>
                 <button
                   onClick={handleLogout}
-                  className="text-sm text-green-600 hover:text-green-500 font-medium px-3 py-2 rounded-md hover:bg-green-50 transition-colors"
+                  className="text-sm bg-red-600 text-white font-medium px-4 py-2 rounded-md hover:bg-red-700 transition-colors"
                 >
                   Logout
                 </button>
@@ -44,13 +44,13 @@ export const NavigationBar: React.FC = () => {
             ) : (
               <>
                 <Link
-                  href="/auth"
+                  href="/login"
                   className="text-sm text-gray-600 hover:text-gray-900 font-medium px-3 py-2 rounded-md hover:bg-gray-50 transition-colors"
                 >
                   Login
                 </Link>
                 <Link
-                  href="/auth"
+                  href="/signup"
                   className="text-sm bg-green-600 text-white font-medium px-4 py-2 rounded-md hover:bg-green-700 transition-colors"
                 >
                   Sign Up
@@ -83,11 +83,11 @@ export const NavigationBar: React.FC = () => {
               {isAuthenticated ? (
                 <>
                   <div className="px-3 py-2 text-sm text-gray-600">
-                    Welcome, {user?.firstName || user?.email}
+                    Welcome, <span className="font-medium text-gray-900">{user?.username}</span>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-3 py-2 text-sm text-green-600 hover:text-green-500 font-medium hover:bg-green-50 rounded-md transition-colors"
+                    className="block w-full text-left px-3 py-2 text-sm bg-red-600 text-white font-medium hover:bg-red-700 rounded-md transition-colors"
                   >
                     Logout
                   </button>
@@ -95,14 +95,14 @@ export const NavigationBar: React.FC = () => {
               ) : (
                 <>
                   <Link
-                    href="/auth"
+                    href="/login"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 text-sm text-gray-600 hover:text-gray-900 font-medium hover:bg-gray-50 rounded-md transition-colors"
                   >
                     Login
                   </Link>
                   <Link
-                    href="/auth"
+                    href="/signup"
                     onClick={() => setIsMobileMenuOpen(false)}
                     className="block px-3 py-2 text-sm bg-green-600 text-white font-medium hover:bg-green-700 rounded-md transition-colors"
                   >
