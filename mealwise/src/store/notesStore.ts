@@ -66,12 +66,10 @@ export const useNotesStore = create<NotesState>()(
       saveCurrentNote: async (user: User) => {
         const { notes, currentNoteTitle, currentNoteId, savedNotes } = get();
         const currUpdatedAt = new Date();
-        console.log(currUpdatedAt);
         if (!notes.trim()) return;
         
         if (currentNoteId) {
           // Update existing note
-          console.log("updating existing note");
           const updatedNotes = savedNotes.map(note => 
             note.id === currentNoteId 
               ? { ...note, title: currentNoteTitle, content: notes, updatedAt: currUpdatedAt }
@@ -100,7 +98,6 @@ export const useNotesStore = create<NotesState>()(
         } else {
           // Create new note
           const tempNoteId = Date.now().toString();
-          console.log("creating new note");
           const newNote: SavedNote = {
             id: tempNoteId,
             title: currentNoteTitle,
@@ -131,6 +128,8 @@ export const useNotesStore = create<NotesState>()(
                 createdAt: currUpdatedAt
               })
             });
+            // Fetch updated notes after creating
+            get().fetchNotes(user);
           }
         }
       },
@@ -148,12 +147,23 @@ export const useNotesStore = create<NotesState>()(
       },
       
       deleteNote: async (user, noteId) => {
-        const { savedNotes } = get();
-        set({
-          savedNotes: savedNotes.filter(n => n.id !== noteId),
-        });
+        const { savedNotes, currentNoteId, notes, currentNoteTitle } = get();
+        
+        // If the deleted note is currently being viewed, clear the main view
+        if (currentNoteId === noteId) {
+          set({
+            notes: '',
+            currentNoteTitle: 'Note 1',
+            currentNoteId: null,
+            savedNotes: savedNotes.filter(n => n.id !== noteId),
+          });
+        } else {
+          set({
+            savedNotes: savedNotes.filter(n => n.id !== noteId),
+          });
+        }
+        
         if (user) {
-            console.log("Deleting Note");
             await fetch(`${API_BASE}`, {
               method: "DELETE",
               headers: { 
@@ -165,7 +175,9 @@ export const useNotesStore = create<NotesState>()(
                 noteid: noteId
               })
             });
-          }
+            // Fetch updated notes after deletion
+            get().fetchNotes(user);
+        }
       },
       
       createNewNote: () => {

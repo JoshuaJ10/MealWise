@@ -14,28 +14,10 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
   const { savedNotes, loadNote, deleteNote, createNewNote, fetchNotes } = useNotesStore();
 
   useEffect(() => {
-    console.log("fetching notes pt1 - user:", user);
     if (user?.username) {
-      console.log("fetching notes pt2 - calling fetchNotes");
       fetchNotes(user); // fetch notes from DynamoDB via API Gateway
-    } else {
-      console.log("fetching notes pt2 - no user or username");
     }
-  }, [user, fetchNotes]);
-  useEffect(() => {
-    if (user?.username) {
-      fetchNotes(user);
-    }
-  }, [savedNotes])
-
-  // Additional useEffect to handle page refresh
-  useEffect(() => {
-    console.log("Component mounted, checking if user is available");
-    if (user?.username) {
-      console.log("User available on mount, fetching notes");
-      fetchNotes(user);
-    }
-  }, []); // Empty dependency array - runs only on mount
+  }, [user?.username]); // Only fetch when username changes
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
