@@ -3,7 +3,6 @@ import { Ingredient, Store, StoreSearchResult, StorePrice } from '@/types/store'
 class StoreService {
   private readonly KROGER_API_KEY = process.env.NEXT_PUBLIC_KROGER_API_KEY;
   private readonly WALMART_API_KEY = process.env.NEXT_PUBLIC_WALMART_API_KEY;
-  private readonly GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
   /**
    * Extract ingredients from notes text
@@ -76,13 +75,7 @@ class StoreService {
    * Get user's current location
    */
   async getCurrentLocation(): Promise<{ latitude: number; longitude: number }> {
-    // For now, return a default location (Atlanta, GA)
-    // In production, you would implement proper geolocation with fallback
-    return { latitude: 33.748997, longitude: -84.387985 };
-    
-    // Uncomment below for real geolocation (with proper error handling):
-    /*
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       if (!navigator.geolocation) {
         console.warn('Geolocation not supported, using default location');
         resolve({ latitude: 33.748997, longitude: -84.387985 });
@@ -91,6 +84,7 @@ class StoreService {
 
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log('Got user location:', position.coords.latitude, position.coords.longitude);
           resolve({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
@@ -102,42 +96,204 @@ class StoreService {
         },
         {
           enableHighAccuracy: false,
-          timeout: 5000,
+          timeout: 10000,
           maximumAge: 300000, // 5 minutes
         }
       );
     });
-    */
+  }
+
+  /**
+   * Convert zip code to coordinates using Google Geocoding API
+   */
+  async getLocationFromZipCode(zipCode: string): Promise<{ latitude: number; longitude: number }> {
+    try {
+      const url = `/api/google-maps/geocode?address=${zipCode}`;
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      
+      if (data.status === 'OK' && data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+        console.log(`Converted zip code ${zipCode} to coordinates:`, location);
+        return {
+          latitude: location.lat,
+          longitude: location.lng,
+        };
+      } else {
+        console.error(`Geocoding error for zip ${zipCode}:`, data.status);
+        return { latitude: 33.748997, longitude: -84.387985 };
+      }
+    } catch (error) {
+      console.error('Error geocoding zip code:', error);
+      return { latitude: 33.748997, longitude: -84.387985 };
+    }
   }
 
   /**
    * Search for nearby stores using Google Maps API
    */
   async searchNearbyStores(location: { latitude: number; longitude: number }): Promise<Store[]> {
-    // For now, return mock data
-    // In production, you would call Google Maps Places API here
+    console.log('=== SEARCHING FOR STORES ===');
+    console.log('Google Maps API Key:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ? 'Present' : 'Missing');
+    console.log('API Key length:', process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.length || 0);
+    console.log('Search location:', location);
+
+    if (!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY) {
+      console.warn('❌ Google Maps API key not found, using mock data');
+      return this.getMockStores();
+    }
+
+    try {
+      const stores: Store[] = [];
+      
+      // Search for Kroger stores
+      console.log('🔍 Searching for Kroger stores...');
+      const krogerStores = await this.searchStoresByChain(location, 'kroger');
+      console.log('✅ Found Kroger stores:', krogerStores.length);
+      stores.push(...krogerStores);
+      
+      // Search for Walmart stores
+      console.log('🔍 Searching for Walmart stores...');
+      const walmartStores = await this.searchStoresByChain(location, 'walmart');
+      console.log('✅ Found Walmart stores:', walmartStores.length);
+      stores.push(...walmartStores);
+      
+      console.log('📊 Total stores found:', stores.length);
+      
+      if (stores.length === 0) {
+        console.warn('⚠️ No real stores found, using mock data');
+        return this.getMockStores();
+      }
+      
+      // Sort by distance and return top 10
+      const sortedStores = stores
+        .sort((a, b) => a.distance - b.distance)
+        .slice(0, 10);
+      
+      console.log('🎯 Returning stores:', sortedStores);
+      return sortedStores;
+        
+    } catch (error) {
+      console.error('❌ Error searching stores with Google Maps API:', error);
+      console.log('🔄 Falling back to mock data');
+      return this.getMockStores();
+    }
+  }
+
+  /**
+   * Search for stores of a specific chain using Google Maps Places API
+   */
+  private async searchStoresByChain(
+    location: { latitude: number; longitude: number }, 
+    chain: 'kroger' | 'walmart'
+  ): Promise<Store[]> {
+    const chainName = chain === 'kroger' ? 'Kroger' : 'Walmart';
+    const radius = 50000; // 50km radius
     
+    const url = `/api/google-maps/places?latitude=${location.latitude}&longitude=${location.longitude}&radius=${radius}&keyword=${chainName}`;
+
+    console.log(`Searching for ${chainName} stores at:`, location);
+    console.log('API URL:', url);
+
+    try {
+      console.log(`🌐 Making fetch request to: ${url}`);
+      const response = await fetch(url);
+      
+      console.log(`📡 Response status: ${response.status} ${response.statusText}`);
+      console.log(`📡 Response headers:`, Object.fromEntries(response.headers.entries()));
+      
+      if (!response.ok) {
+        console.error(`❌ HTTP Error: ${response.status} ${response.statusText}`);
+        const errorText = await response.text();
+        console.error(`❌ Error response body:`, errorText);
+        throw new Error(`Google Maps API error: ${response.status}`);
+      }
+      
+      const data = await response.json();
+      console.log(`✅ Google Maps API response for ${chainName}:`, data);
+      
+      if (data.status !== 'OK' && data.status !== 'ZERO_RESULTS') {
+        console.error(`API Error Status: ${data.status}`, data.error_message);
+        throw new Error(`Google Maps API error: ${data.status} - ${data.error_message}`);
+      }
+      
+      if (!data.results || data.results.length === 0) {
+        console.log(`No ${chainName} stores found in the area`);
+        return [];
+      }
+      
+      const stores = data.results.map((place: any) => ({
+        id: `${chain}_${place.place_id}`,
+        name: place.name,
+        address: place.vicinity,
+        chain: chain,
+        distance: this.calculateDistance(
+          location.latitude, 
+          location.longitude, 
+          place.geometry.location.lat, 
+          place.geometry.location.lng
+        ),
+      }));
+      
+      console.log(`Mapped ${chainName} stores:`, stores);
+      return stores;
+      
+    } catch (error) {
+      console.error(`Error searching for ${chainName} stores:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Calculate distance between two coordinates using Haversine formula
+   */
+  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R = 3959; // Earth's radius in miles
+    const dLat = this.toRadians(lat2 - lat1);
+    const dLon = this.toRadians(lon2 - lon1);
+    
+    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  /**
+   * Convert degrees to radians
+   */
+  private toRadians(degrees: number): number {
+    return degrees * (Math.PI / 180);
+  }
+
+  /**
+   * Get mock stores as fallback
+   */
+  private getMockStores(): Store[] {
     const mockStores: Store[] = [
       {
         id: 'kroger1',
         name: 'Kroger',
         address: '123 Main St, Anytown, USA',
         chain: 'kroger',
-        distance: Math.random() * 5, // Mock distance calculation
+        distance: Math.random() * 5,
+        latitude: 33.748997,
+        longitude: -84.387985,
       },
       {
         id: 'walmart1',
         name: 'Walmart Supercenter',
         address: '456 Oak Ave, Anytown, USA',
         chain: 'walmart',
-        distance: Math.random() * 5, // Mock distance calculation
+        distance: Math.random() * 5,
+        latitude: 33.748997,
+        longitude: -84.387985,
       },
     ];
 
-    return mockStores.map(store => ({
-      ...store,
-      distance: Math.random() * 5, // Mock distance calculation
-    })).sort((a, b) => a.distance - b.distance);
+    return mockStores.sort((a, b) => a.distance - b.distance);
   }
 
   /**
@@ -307,6 +463,49 @@ class StoreService {
   }
 
   /**
+   * Search for stores and prices using zip code
+   */
+  async searchStoresAndPricesWithZip(notes: string, zipCode: string): Promise<StoreSearchResult> {
+    try {
+      // Extract ingredients from notes
+      const ingredients = this.extractIngredients(notes);
+      
+      if (ingredients.length === 0) {
+        return {
+          stores: [],
+          prices: [],
+          totalEstimatedCost: 0,
+        };
+      }
+
+      // Get location from zip code
+      const location = await this.getLocationFromZipCode(zipCode);
+      
+      // Search for nearby stores
+      const stores = await this.searchNearbyStores(location);
+      
+      // Get prices for ingredients at each store
+      const prices = await this.getIngredientPrices(ingredients, stores);
+      
+      // Calculate total estimated cost
+      const totalEstimatedCost = this.calculateTotalCost(prices, ingredients);
+
+      return {
+        stores,
+        prices,
+        totalEstimatedCost,
+      };
+    } catch (error) {
+      console.error('Error searching stores and prices with zip code:', error);
+      return {
+        stores: [],
+        prices: [],
+        totalEstimatedCost: 0,
+      };
+    }
+  }
+
+  /**
    * Calculate total estimated cost using cheapest available prices
    */
   private calculateTotalCost(prices: StorePrice[], ingredients: Ingredient[]): number {
@@ -331,3 +530,8 @@ class StoreService {
 }
 
 export const storeService = new StoreService();
+
+// Make storeService available globally for debugging
+if (typeof window !== 'undefined') {
+  (window as any).storeService = storeService;
+}

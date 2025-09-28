@@ -15,6 +15,8 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
   const [searchResult, setSearchResult] = useState<StoreSearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [zipCode, setZipCode] = useState<string>('');
+  const [useZipCode, setUseZipCode] = useState<boolean>(false);
 
   useEffect(() => {
     if (isVisible && notes.trim()) {
@@ -27,7 +29,14 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
     setError(null);
     
     try {
-      const result = await storeService.searchStoresAndPrices(notes);
+      let result;
+      if (useZipCode && zipCode.trim()) {
+        console.log('Using zip code:', zipCode);
+        result = await storeService.searchStoresAndPricesWithZip(notes, zipCode);
+      } else {
+        console.log('Using geolocation');
+        result = await storeService.searchStoresAndPrices(notes);
+      }
       setSearchResult(result);
     } catch (err) {
       setError('Failed to find stores and prices');
@@ -62,19 +71,70 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
 
   return (
     <div className="w-96 bg-white border-l border-amber-200 flex flex-col h-full">
-      {/* Header */}
-      <div className="p-4 border-b border-amber-200 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ShoppingCart className="w-5 h-5 text-green-600" />
-          <h2 className="text-lg font-semibold text-gray-900">Nearby Stores</h2>
-        </div>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
-        >
-          <XCircle className="w-5 h-5" />
-        </button>
-      </div>
+       {/* Header */}
+       <div className="p-4 border-b border-amber-200">
+         <div className="flex items-center justify-between mb-3">
+           <div className="flex items-center gap-2">
+             <ShoppingCart className="w-5 h-5 text-green-600" />
+             <h2 className="text-lg font-semibold text-gray-900">Nearby Stores</h2>
+           </div>
+           <button
+             onClick={onClose}
+             className="text-gray-400 hover:text-gray-600 transition-colors"
+           >
+             <XCircle className="w-5 h-5" />
+           </button>
+         </div>
+         
+         {/* Location Options */}
+         <div className="space-y-2">
+           <div className="flex items-center gap-2">
+             <input
+               type="radio"
+               id="useLocation"
+               name="locationType"
+               checked={!useZipCode}
+               onChange={() => setUseZipCode(false)}
+               className="text-green-600"
+             />
+             <label htmlFor="useLocation" className="text-sm text-gray-700">
+               Use my location
+             </label>
+           </div>
+           <div className="flex items-center gap-2">
+             <input
+               type="radio"
+               id="useZipCode"
+               name="locationType"
+               checked={useZipCode}
+               onChange={() => setUseZipCode(true)}
+               className="text-green-600"
+             />
+             <label htmlFor="useZipCode" className="text-sm text-gray-700">
+               Enter zip code
+             </label>
+           </div>
+           {useZipCode && (
+             <div className="flex items-center gap-2">
+               <input
+                 type="text"
+                 placeholder="Enter zip code (e.g., 30309)"
+                 value={zipCode}
+                 onChange={(e) => setZipCode(e.target.value)}
+                 className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-green-500"
+                 maxLength={5}
+               />
+               <button
+                 onClick={searchStores}
+                 disabled={!zipCode.trim() || isLoading}
+                 className="px-3 py-1 text-sm bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+               >
+                 Search
+               </button>
+             </div>
+           )}
+         </div>
+       </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
