@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Send, Sparkles, Save } from 'lucide-react';
 import { useNotesStore } from '@/store/notesStore';
 
-export const CedarNotesInterface: React.FC = () => {
+export const AINotesInterface: React.FC = () => {
   const [inputValue, setInputValue] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -43,7 +43,7 @@ export const CedarNotesInterface: React.FC = () => {
     } catch (error) {
       console.error('Error processing message:', error);
       // Show error in notes
-      updateNotes(notes + '\n\n[Error: ' + error.message + ']');
+      updateNotes(notes + '\n\n[Error: ' + (error instanceof Error ? error.message : 'Unknown error') + ']');
     } finally {
       setIsProcessing(false);
     }

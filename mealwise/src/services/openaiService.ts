@@ -78,8 +78,10 @@ export class OpenAIService {
       const notesContent = await response.text();
       
       return {
-        notesUpdate: notesContent,
-        message: 'Notes updated successfully'
+        items: [],
+        message: 'Notes updated successfully',
+        totalCost: 0,
+        notesUpdate: notesContent
       };
     } catch (error) {
       console.error('OpenAI API error:', error);

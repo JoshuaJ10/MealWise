@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { CedarNotesInterface } from '@/components/cedar/CedarNotesInterface';
+import { AINotesInterface } from '@/components/ai/AINotesInterface';
 import { NotesSidebar } from '@/components/layout/NotesSidebar';
 
 export default function Home() {
@@ -12,7 +12,7 @@ export default function Home() {
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
-        <CedarNotesInterface />
+        <AINotesInterface />
       </div>
     </div>
   );
