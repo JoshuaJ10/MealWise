@@ -70,9 +70,9 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
   if (!isVisible) return null;
 
   return (
-    <div className="w-72 sm:w-80 lg:w-96 bg-white border-l border-amber-200 flex flex-col h-full">
+    <div className="w-64 sm:w-72 md:w-80 lg:w-96 bg-white border-l border-amber-200 flex flex-col h-full">
        {/* Header */}
-       <div className="p-3 sm:p-4 border-b border-amber-200">
+       <div className="p-2 sm:p-4 border-b border-amber-200">
          <div className="flex items-center justify-between mb-3">
            <div className="flex items-center gap-2">
              <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
