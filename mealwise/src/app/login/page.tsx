@@ -80,6 +80,7 @@ export default function Login() {
           password: formData.password
         })
       });
+      
       const data = await response.json();
       if (data.statusCode > 299) {
         const errorText = JSON.parse(data.body);
