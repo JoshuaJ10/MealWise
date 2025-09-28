@@ -14,12 +14,23 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
   const { savedNotes, loadNote, deleteNote, createNewNote, fetchNotes } = useNotesStore();
 
   useEffect(() => {
-    console.log("fectching notes pt1 ");
-    if (user) {
-      console.log("fectching notes pt2 ");
+    console.log("fetching notes pt1 - user:", user);
+    if (user?.username) {
+      console.log("fetching notes pt2 - calling fetchNotes");
       fetchNotes(user); // fetch notes from DynamoDB via API Gateway
+    } else {
+      console.log("fetching notes pt2 - no user or username");
     }
   }, [user, fetchNotes]);
+
+  // Additional useEffect to handle page refresh
+  useEffect(() => {
+    console.log("Component mounted, checking if user is available");
+    if (user?.username) {
+      console.log("User available on mount, fetching notes");
+      fetchNotes(user);
+    }
+  }, []); // Empty dependency array - runs only on mount
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       month: 'short',
@@ -62,13 +73,13 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
           </button>
         </div>
         <p className="text-sm text-gray-600 mt-1">
-          {savedNotes.length} note{savedNotes.length !== 1 ? 's' : ''}
+          {Array.isArray(savedNotes) ? savedNotes.length : 0} note{Array.isArray(savedNotes) && savedNotes.length !== 1 ? 's' : ''}
         </p>
       </div>
 
       {/* Notes List */}
       <div className="flex-1 overflow-y-auto">
-        {savedNotes.length === 0 ? (
+        {!Array.isArray(savedNotes) || savedNotes.length === 0 ? (
           <div className="p-4 text-center text-gray-500">
             <FileText className="w-8 h-8 mx-auto mb-2 text-gray-300" />
             <p className="text-sm">No saved notes yet</p>
@@ -78,7 +89,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
           </div>
         ) : (
           <div className="p-2">
-            {savedNotes
+            {Array.isArray(savedNotes) && savedNotes
               .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
               .map((note) => (
                 <div

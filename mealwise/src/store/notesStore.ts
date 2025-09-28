@@ -56,8 +56,8 @@ export const useNotesStore = create<NotesState>()(
 
           const data: SavedNote[] = await res.json();
 
-          // Update store with fetched notes
-          set({ savedNotes: data });
+          // Update store with fetched notes - ensure it's always an array
+          set({ savedNotes: Array.isArray(data) ? data : [] });
         } catch (err) {
           console.error("Error fetching notes:", err);
         }

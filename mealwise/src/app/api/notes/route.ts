@@ -3,10 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 const API_BASE = process.env.AWS_NOTES_URL;
 
 export async function POST(request: NextRequest) {
-    console.log("Sending to AWS API Gateway");
     try {
         const body = await request.json();
-        console.log(request);
         const awsPostEvent = {
             httpMethod: "POST",
             body: JSON.stringify({
@@ -27,7 +25,6 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify(awsPostEvent),
         });
         const data = await response.text();
-        console.log(data);
         let responseData;
         try {
             responseData = JSON.parse(data);
@@ -82,7 +79,6 @@ export async function PATCH(request: NextRequest) {
             body: JSON.stringify(awsEvent),
         });
         const data = await response.text();
-        console.log(data);
         let responseData;
         try {
             responseData = JSON.parse(data);
@@ -119,7 +115,6 @@ export async function GET(request: NextRequest) {
     // Extract query params from request
     const { searchParams } = new URL(request.url);
     const username = searchParams.get("username");
-    console.log(username);
     if (!username) {
       return new NextResponse(
         JSON.stringify({ message: "username is required" }),
@@ -127,10 +122,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Call your Lambda/API Gateway with query params
-    const response = await fetch(`${API_BASE}/notesdb?username=${username}`, {
-      method: "GET",
+    // Use POST method to send data in body (GET cannot have body)
+    const awsEvent = {
+      httpMethod: "GET",
+      body: JSON.stringify({
+        resource: "/notesdb",
+        username: username
+      })
+    };
+
+    // Call your Lambda/API Gateway with POST method to send body data
+    const response = await fetch(`${API_BASE}/notesdb`, {
+      method: "POST",
       headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(awsEvent),
     });
 
     const data = await response.text();
@@ -138,7 +143,13 @@ export async function GET(request: NextRequest) {
     let responseData;
     try {
       responseData = JSON.parse(data);
-    } catch {
+      
+      // Extract the actual notes from the body field
+      if (responseData.body) {
+        const notes = JSON.parse(responseData.body);
+        responseData = notes; // Return the notes array directly
+      }
+    } catch (parseError) {
       responseData = { message: data };
     }
 

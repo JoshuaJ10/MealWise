@@ -7,7 +7,7 @@ import { NotesSidebar } from '@/components/layout/NotesSidebar';
 import { useAuthStore } from '@/store/authStore';
 
 export default function Home() {
-  const { isAuthenticated, isLoading, initializeAuth } = useAuthStore();
+  const { isAuthenticated, isLoading, initializeAuth, user } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function Home() {
   return (
     <div className="h-screen bg-amber-50 flex overflow-hidden">
       {/* Sidebar */}
-      <NotesSidebar />
+      <NotesSidebar user={user} />
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
