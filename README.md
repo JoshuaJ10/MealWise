@@ -17,12 +17,12 @@
 ## Tech Stack
 
 - **Frontend:** React.js  
-- **Backend:** Node.js / Express (or your backend)  
-- **AI:** [Specify AI model or API used, e.g., OpenAI GPT]  
-- **Database:** [Specify database, e.g., MongoDB, Firebase]  
+- **Backend:** Node.js
+- **AI:** OpenAI  
+- **Database:** DynamoDB
 
 ## Getting Started
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/yourusername/mealwise.git
+   git clone https://github.com/JoshuaJ10/MealWise.git
