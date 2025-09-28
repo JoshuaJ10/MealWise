@@ -70,13 +70,13 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
   if (!isVisible) return null;
 
   return (
-    <div className="w-96 bg-white border-l border-amber-200 flex flex-col h-full">
+    <div className="w-72 sm:w-80 lg:w-96 bg-white border-l border-amber-200 flex flex-col h-full">
        {/* Header */}
-       <div className="p-4 border-b border-amber-200">
+       <div className="p-3 sm:p-4 border-b border-amber-200">
          <div className="flex items-center justify-between mb-3">
            <div className="flex items-center gap-2">
-             <ShoppingCart className="w-5 h-5 text-green-600" />
-             <h2 className="text-lg font-semibold text-gray-900">Nearby Stores</h2>
+             <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+             <h2 className="text-base sm:text-lg font-semibold text-gray-900">Stores</h2>
            </div>
            <button
              onClick={onClose}

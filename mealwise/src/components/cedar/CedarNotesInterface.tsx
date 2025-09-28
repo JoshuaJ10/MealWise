@@ -76,40 +76,40 @@ export const CedarNotesInterface: React.FC = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Main Content - Notes Area */}
-        <div className="flex-1 p-6">
+        <div className={`flex-1 p-3 sm:p-6 transition-all duration-300 ${isStoreSidebarOpen ? 'mr-0' : ''}`}>
           <div className="max-w-4xl mx-auto">
             {/* Notes Editor */}
             <div className="bg-white rounded-lg border border-amber-200 shadow-sm flex flex-col h-[calc(100vh-200px)]">
-              <div className="p-4 border-b border-amber-200 flex items-center justify-between flex-shrink-0">
-                <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-medium text-amber-900">Notes</h3>
+              <div className="p-3 sm:p-4 border-b border-amber-200 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <h3 className="text-base sm:text-lg font-medium text-amber-900 whitespace-nowrap">Notes</h3>
                   <input
                     type="text"
                     value={currentNoteTitle}
                     onChange={(e) => setCurrentNoteTitle(e.target.value)}
-                    className="px-3 py-1 text-sm border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                    className="hidden sm:block px-2 py-1 text-sm border border-amber-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900 w-32 sm:w-40"
                     placeholder="Note title..."
                   />
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                   <button
                     onClick={() => setIsStoreSidebarOpen(!isStoreSidebarOpen)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors ${
+                    className={`flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-4 sm:py-2 rounded-md transition-colors text-xs sm:text-sm ${
                       isStoreSidebarOpen 
                         ? 'bg-blue-700 text-white' 
                         : 'bg-blue-600 text-white hover:bg-blue-700'
                     }`}
                   >
                     <ShoppingCart className="w-4 h-4" />
-                    Find Stores
+                    <span className="hidden sm:inline sm:ml-2">Find Stores</span>
                   </button>
                   <button
                     onClick={handleSaveNote}
                     disabled={!notes.trim()}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-xs sm:text-sm"
                   >
                     <Save className="w-4 h-4" />
-                    Save Note
+                    <span className="hidden sm:inline sm:ml-2">Save Note</span>
                   </button>
                 </div>
               </div>
@@ -132,10 +132,10 @@ export const CedarNotesInterface: React.FC = () => {
         </div>
 
         {/* AI Input - Fixed at bottom */}
-        <div className="bg-white border-t border-amber-200 p-4">
+        <div className="bg-white border-t border-amber-200 p-2 sm:p-4">
           <div className="max-w-4xl mx-auto">
-            {/* Quick Actions */}
-            <div className="flex flex-wrap gap-2 mb-3">
+            {/* Quick Actions - Hidden on mobile */}
+            <div className="hidden sm:flex flex-wrap gap-2 mb-3">
               {quickActions.map((action, index) => (
                 <button
                   key={index}
@@ -154,19 +154,19 @@ export const CedarNotesInterface: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask AI to control your notes... (e.g., 'Plan 5 dinners for $80', 'Add shopping list', 'Create meal plan')"
-                className="flex-1 px-4 py-3 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
+                placeholder="Ask AI..."
+                className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border border-amber-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white text-gray-900"
                 disabled={isProcessing}
               />
               <button
                 onClick={handleSubmit}
                 disabled={!inputValue.trim() || isProcessing}
-                className="p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="p-2 sm:p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isProcessing ? (
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5" />
+                  <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </button>
             </div>
