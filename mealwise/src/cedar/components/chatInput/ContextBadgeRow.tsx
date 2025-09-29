@@ -21,14 +21,14 @@ interface ContextBadgeRowProps {
 }
 
 export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
-	const removeContextEntry = useCedarStore((s) => s.removeContextEntry);
-	const mentionProviders = useCedarStore((s) => s.mentionProviders);
-	const additionalContext = useCedarStore((s) => s.additionalContext);
-	const collapsingConfigs = useCedarStore((s) => s.collapsingConfigs);
+	const removeContextEntry = useCedarStore((s) => s.removeContextEntry) as (key: string) => void;
+	const mentionProviders = useCedarStore((s) => s.mentionProviders) as Map<string, unknown>;
+	const additionalContext = useCedarStore((s) => s.additionalContext) as Map<string, unknown>;
+	const collapsingConfigs = useCedarStore((s) => s.collapsingConfigs) as Map<string, unknown>;
 
 	const renderContextBadge = (key: string, entry: ContextEntry) => {
 		// Try to find a provider that might have created this entry
-		const provider = mentionProviders.get(key);
+		const provider = mentionProviders.get(key) as { renderContextBadge?: (entry: ContextEntry) => React.ReactNode };
 
 		// Respect visibility flag
 		if (entry.metadata?.showInChat === false) {
@@ -57,43 +57,45 @@ export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
 				style={bgStyle}
 				tabIndex={0}
 				aria-label={`Selected ${key} ${label}`}
-				onClick={() => {
-					if (entry.source === 'mention') {
-						removeContextEntry(key, entry.id);
-						// Also remove the mention from the editor
-						if (editor) {
-							const { state } = editor;
-							const { doc, tr } = state;
-							let found = false;
+						onClick={() => {
+							if (entry.source === 'mention') {
+								removeContextEntry(key);
+								// Also remove the mention from the editor
+								if (editor && editor.state) {
+									const { state } = editor;
+									const { doc, tr } = state as { doc: { descendants: (callback: (node: unknown, pos: number) => void) => void }; tr: unknown };
+									let found = false;
 
-							doc.descendants((node, pos) => {
-								if (
-									node.type.name === 'mention' &&
-									node.attrs.contextEntryId === entry.id
-								) {
-									tr.delete(pos, pos + node.nodeSize);
+									doc.descendants((node, pos) => {
+										const nodeObj = node as { type: { name: string }; attrs: { contextEntryId: string }; nodeSize: number };
+										if (
+											nodeObj.type.name === 'mention' &&
+											nodeObj.attrs.contextEntryId === entry.id
+										) {
+											const trObj = tr as { delete: (start: number, end: number) => void };
+											trObj.delete(pos, pos + nodeObj.nodeSize);
 									found = true;
 									return false;
 								}
 							});
 
-							if (found) {
-								editor.view.dispatch(tr);
-							}
+									if (found && editor.view) {
+										editor.view.dispatch(tr);
+									}
 						}
 					}
 				}}>
-				{entry.metadata?.icon && entry.source === 'mention' && (
-					<>
-						<span className='flex-shrink-0 group-hover:hidden'>
-							{withClassName(entry.metadata.icon, 'w-3 h-3')}
-						</span>
-						<X className='w-3 h-3 flex-shrink-0 hidden group-hover:block' />
-					</>
-				)}
+								{entry.metadata?.icon && entry.source === 'mention' && (
+									<>
+										<span className='flex-shrink-0 group-hover:hidden'>
+											{React.createElement(withClassName(entry.metadata.icon as React.ComponentType<unknown>, 'w-3 h-3'))}
+										</span>
+										<X className='w-3 h-3 flex-shrink-0 hidden group-hover:block' />
+									</>
+								)}
 				{entry.metadata?.icon && entry.source !== 'mention' && (
 					<span className='flex-shrink-0'>
-						{withClassName(entry.metadata.icon, 'w-3 h-3')}
+						{React.createElement(withClassName(entry.metadata.icon as React.ComponentType<unknown>, 'w-3 h-3'))}
 					</span>
 				)}
 				{!entry.metadata?.icon && entry.source === 'mention' && (
@@ -109,10 +111,10 @@ export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
 		const elements: React.ReactNode[] = [];
 
 		// Create a sorted list of context keys based on their entries' order metadata
-		if (additionalContext) {
-		const contextKeysWithOrder = Object.keys(additionalContext).map((key) => {
-			const value = additionalContext[key];
-			const entries = normalizeToArray(value);
+				if (additionalContext) {
+					const contextKeysWithOrder = Array.from(additionalContext.keys()).map((key) => {
+						const value = additionalContext.get(key) as ContextEntry | ContextEntry[] | undefined;
+						const entries = normalizeToArray(value || []);
 			// Get the minimum order value from entries for this key (or MAX if none)
 			const minOrder = entries.reduce((min: number, entry: ContextEntry) => {
 				const order = entry.metadata?.order;
@@ -138,12 +140,12 @@ export const ContextBadgeRow: React.FC<ContextBadgeRowProps> = ({ editor }) => {
 			);
 
 			// Check for collapsing configuration from store
-			const keyCollapseConfig = collapsingConfigs.get(key);
+			const keyCollapseConfig = collapsingConfigs.get(key) as { threshold?: number; label?: string; icon?: React.ComponentType<unknown> } | undefined;
 
 			// Apply collapsing if configured and threshold exceeded
 			if (
 				keyCollapseConfig &&
-				visibleEntries.length > keyCollapseConfig.threshold
+				visibleEntries.length > (keyCollapseConfig.threshold || 3)
 			) {
 				const firstEntry = entries[0];
 				// Create collapsed badge

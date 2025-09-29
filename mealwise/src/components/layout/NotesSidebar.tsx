@@ -7,7 +7,7 @@ import { Trash2, FileText, Plus } from 'lucide-react';
 
 interface NotesSidebarProps {
   className?: string;
-  user: { username: string };
+  user?: { username: string };
 }
 
 export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user }) => {

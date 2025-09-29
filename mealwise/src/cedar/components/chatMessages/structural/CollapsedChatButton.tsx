@@ -35,7 +35,7 @@ export const CollapsedButton = forwardRef<
 	const { styling } = useStyling();
 	const isDarkMode = styling.darkMode;
 
-	const setShowChat = useCedarStore((state) => state.setShowChat);
+	const setShowChat = useCedarStore((state) => state.setShowChat) as (show: boolean) => void;
 
 	// Starting offset = 8px (bottom-2) for a tighter fit
 	const BASE_OFFSET = 20;

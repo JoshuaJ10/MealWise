@@ -23,12 +23,12 @@ const DialogueOptions: React.FC<DialogueOptionsProps> = ({ message }) => {
 			{content && <p className='mb-2 text-sm'>{content}</p>}
 			<div className='flex flex-col space-y-2'>
 				{options.map((opt: DialogueOptionChoice) => {
-					const isSelected = selected === opt.title;
+					const isSelected = selected === opt.label;
 					return (
 						<Flat3dButton
-							key={opt.title}
+							key={opt.label}
 							onClick={() => {
-								setSelected(opt.title);
+								setSelected(opt.label);
 								if (onChoice) onChoice(opt, store);
 							}}
 							className={cn(
@@ -41,7 +41,7 @@ const DialogueOptions: React.FC<DialogueOptionsProps> = ({ message }) => {
 								(typeof opt.icon === 'string' ? (
 									<img
 										src={opt.icon}
-										alt={opt.title}
+										alt={opt.label}
 										width={24}
 										height={24}
 										className='w-6 h-6 mr-2 flex-shrink-0'
@@ -50,7 +50,7 @@ const DialogueOptions: React.FC<DialogueOptionsProps> = ({ message }) => {
 									<span className='w-6 h-6 mr-2 flex-shrink-0'>{opt.icon}</span>
 								))}
 							<div className='text-left'>
-								<div className='font-medium'>{opt.title}</div>
+								<div className='font-medium'>{opt.label}</div>
 								{opt.description && (
 									<div className='text-sm text-gray-500'>{opt.description}</div>
 								)}

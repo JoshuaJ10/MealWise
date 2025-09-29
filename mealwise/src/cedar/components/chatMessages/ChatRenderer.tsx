@@ -20,20 +20,18 @@ interface ChatRendererProps {
 }
 
 export const ChatRenderer: React.FC<ChatRendererProps> = ({ message }) => {
-	const getMessageRenderers = useCedarStore(
-		(state) => state.getMessageRenderers
-	);
+  const getMessageRenderers = useCedarStore(
+    (state) => state.getMessageRenderers
+  ) as () => Map<string, React.ComponentType<unknown>>;
 
-	// Check if there is a registered renderer for this message type
-	const renderer = getMessageRenderers(message.type) as
+  // Check if there is a registered renderer for this message type
+  const renderers = getMessageRenderers();
+  const renderer = renderers.get(message.type) as
 		| MessageRenderer<Message>
 		| undefined;
 
 	if (renderer) {
-		// If renderer has validation, ensure compatibility
-		if (!renderer.validateMessage || renderer.validateMessage(message)) {
-			return <>{renderer.render(message)}</>;
-		}
+		return React.createElement(renderer, { message });
 	}
 
 	// Gradient mask for ticker edges
@@ -72,38 +70,38 @@ export const ChatRenderer: React.FC<ChatRendererProps> = ({ message }) => {
 			return (
 				<div className='w-full'>
 					<div
-						{...getMessageStyles(message.role)}
-						className={`${getMessageStyles(message.role).className} w-full`}>
-						<DialogueOptions message={message as DialogueOptionsMessage} />
+						{...getMessageStyles(message.role || 'user')}
+						className={`${getMessageStyles(message.role || 'user').className} w-full`}>
+						<DialogueOptions message={message as unknown as DialogueOptionsMessage} />
 					</div>
 				</div>
 			);
 
-		case 'multiple_choice':
+		case 'multiple-choice':
 			return (
 				<div className='w-full'>
 					<div
-						{...getMessageStyles(message.role)}
-						className={`${getMessageStyles(message.role).className} w-full`}>
-						<MultipleChoice message={message as MultipleChoiceMessage} />
+						{...getMessageStyles(message.role || 'user')}
+						className={`${getMessageStyles(message.role || 'user').className} w-full`}>
+						<MultipleChoice message={message as unknown as MultipleChoiceMessage} />
 					</div>
 				</div>
 			);
 
-		case 'todolist':
-			const messageStyles = getMessageStyles(message.role);
+		case 'todoList':
+			const messageStyles = getMessageStyles(message.role || 'user');
 			return (
 				<div className='w-full'>
 					<div
 						{...messageStyles.style}
 						className={`${messageStyles.className} w-full`}>
-						<TodoList message={message as TodoListMessage} />
+						<TodoList message={message as unknown as TodoListMessage} />
 					</div>
 				</div>
 			);
 
 		case 'ticker': {
-			const buttons = (message as TickerMessage).buttons;
+			const buttons = (message as unknown as TickerMessage).buttons;
 			const items = buttons.map((button, bidx) => (
 				<Flat3dContainer
 					key={bidx}
@@ -141,12 +139,12 @@ export const ChatRenderer: React.FC<ChatRendererProps> = ({ message }) => {
 		default:
 			return (
 				<div
-					className={`${
-						message.role === 'bot' || message.role === 'assistant'
-							? 'max-w-[100%] w-full'
-							: 'max-w-[80%] w-fit'
-					}`}>
-					<div {...getMessageStyles(message.role)}>
+								className={`${
+									(message.role || 'user') === 'assistant' || (message.role || 'user') === 'system'
+										? 'max-w-[100%] w-full'
+										: 'max-w-[80%] w-fit'
+								}`}>
+					<div {...getMessageStyles(message.role || 'user')}>
 						<MarkdownRenderer
 							content={
 								message.content ??

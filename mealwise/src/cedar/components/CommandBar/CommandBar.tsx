@@ -12,7 +12,7 @@ import { KeyboardShortcut } from '@/cedar/components/ui/KeyboardShortcut';
 import { EditorContent } from '@tiptap/react';
 import type { ActivationEvent, ActivationMode } from '@/lib/cedarMock';
 import {
-	ActivationMode as ActivationModeEnum,
+	ActivationModeEnum,
 	cn,
 	useCedarEditor,
 	useMessages,
@@ -529,7 +529,7 @@ export const CommandBar: React.FC<CommandBarProps> = ({
 							? allItemsForNavigation[selectedIndex].id
 							: ''
 					}
-					onValueChange={(value) => {
+					onValueChange={(value: string) => {
 						// Find the index of the selected item
 						const index = allItemsForNavigation.findIndex(
 							(item) => item.id === value
@@ -538,7 +538,7 @@ export const CommandBar: React.FC<CommandBarProps> = ({
 							setSelectedIndex(index);
 						}
 					}}
-					onKeyDown={(e) => {
+					onKeyDown={(e: React.KeyboardEvent) => {
 						// Only prevent cmdk's navigation when we're in the fixed bottom group
 						if (
 							isFocused &&
@@ -604,7 +604,7 @@ export const CommandBar: React.FC<CommandBarProps> = ({
 								className='flex-1 justify-center'
 								aria-label='Message input'>
 								<EditorContent
-									editor={editor}
+									editor={editor as unknown as import('@tiptap/react').Editor}
 									className='prose prose-sm max-w-none focus:outline-none outline-none focus:ring-0 ring-0 [&_*]:focus:outline-none [&_*]:outline-none [&_*]:focus:ring-0 [&_*]:ring-0 placeholder-gray-500 dark:placeholder-gray-400 [&_.ProseMirror]:p-0 [&_.ProseMirror]:outline-none'
 								/>
 							</motion.div>

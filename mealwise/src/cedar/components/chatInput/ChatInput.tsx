@@ -49,11 +49,11 @@ export const ChatInput: React.FC<{
 	const voice = useVoice();
 
 	// Get latest message to check for human-in-the-loop state
-	const messages = useCedarStore((state) => state.messages);
+	const messages = useCedarStore((state) => state.messages) as Array<{ type: string; [key: string]: unknown }>;
 	const latestMessage = messages[messages.length - 1];
 	const isHumanInTheLoopSuspended =
 		latestMessage?.type === 'humanInTheLoop' &&
-		(latestMessage as HumanInTheLoopMessage).state === 'suspended';
+		(latestMessage as unknown as HumanInTheLoopMessage).state === 'suspended';
 
 	// Handle voice toggle
 	const handleVoiceToggle = useCallback(async () => {
@@ -73,6 +73,8 @@ export const ChatInput: React.FC<{
 			voice.toggleVoice();
 		} else if (voice.voicePermissionStatus === 'denied') {
 			console.error('Microphone access denied');
+		} else {
+			console.log('Voice permission not granted:', voice.voicePermissionStatus);
 		}
 	}, [voice]);
 
@@ -184,7 +186,7 @@ export const ChatInput: React.FC<{
 				) : isHumanInTheLoopSuspended ? (
 					<div className='py-2 items-center justify-center w-full'>
 						<HumanInTheLoopIndicator
-							state={(latestMessage as HumanInTheLoopMessage).state}
+							state={(latestMessage as unknown as HumanInTheLoopMessage).state as 'suspended' | 'resumed' | 'cancelled' | 'timeout'}
 						/>
 					</div>
 				) : (

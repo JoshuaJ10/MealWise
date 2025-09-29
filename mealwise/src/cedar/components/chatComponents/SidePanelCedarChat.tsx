@@ -44,8 +44,8 @@ export const SidePanelCedarChat: React.FC<SidePanelCedarChatProps> = ({
 	stream = true,
 }) => {
 	// Get showChat state and setShowChat from store
-	const showChat = useCedarStore((state) => state.showChat);
-	const setShowChat = useCedarStore((state) => state.setShowChat);
+	const showChat = useCedarStore((state) => state.showChat) as boolean;
+	const setShowChat = useCedarStore((state) => state.setShowChat) as (show: boolean) => void;
 
 	return (
 		<>

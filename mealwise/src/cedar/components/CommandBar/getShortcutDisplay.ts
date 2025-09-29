@@ -1,4 +1,4 @@
-import type { ActivationEvent } from 'cedar-os';
+import type { ActivationEvent } from '@/lib/cedarMock';
 
 /**
  * Map individual keys to their display symbols

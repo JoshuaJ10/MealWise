@@ -24,7 +24,7 @@ export const EmbeddedCedarChat: React.FC<EmbeddedCedarChatProps> = ({
 	stream = true,
 	className = '',
 }) => {
-	const setShowChat = useCedarStore((state) => state.setShowChat);
+	const setShowChat = useCedarStore((state) => state.setShowChat) as (show: boolean) => void;
 
 	const handleClose = () => {
 		if (onClose) {

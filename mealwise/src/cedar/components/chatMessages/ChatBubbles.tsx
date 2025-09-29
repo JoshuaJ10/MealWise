@@ -14,7 +14,7 @@ export const ChatBubbles: React.FC<ChatBubblesProps> = ({
 	className = '',
 }) => {
 	const containerRef = useRef<HTMLDivElement>(null);
-	const isProcessing = useCedarStore((state) => state.isProcessing);
+  const isProcessing = useCedarStore((state) => state.isProcessing) as boolean;
 	// Use useThreadMessages hook to get messages for current thread
 	const { messages } = useThreadMessages();
 

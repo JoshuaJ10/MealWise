@@ -5,6 +5,7 @@ import {
 	useCedarStore,
 	useMessages,
 	TickerMessage,
+	TickerButton,
 	DialogueOptionsMessage,
 	MultipleChoiceMessage,
 	SliderMessage,
@@ -29,7 +30,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 	const { isProcessing } = useMessages();
 
 	const store = useCedarStore((state) => state);
-	const styling = useCedarStore((state) => state.styling);
+	const styling = useCedarStore((state) => state.styling) as { accentColor: string; color: string; darkMode: boolean } | undefined;
 
 	// Get the appropriate message based on showThinking prop
 	const latestMessage = React.useMemo(() => {
@@ -78,7 +79,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 			return (
 				<div className={containerClasses}>
 					<div className={`font-semibold ${textSizeClass}`}>
-						<span style={{ color: styling.accentColor }}>Cedar: </span>
+								<span style={{ color: styling?.accentColor || '#3b82f6' }}>Cedar: </span>
 						<TypewriterText
 							text={latestMessage.content}
 							className='break-words'
@@ -89,7 +90,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 			);
 
 		case 'dialogue_options':
-			const dialogueMsg = latestMessage as DialogueOptionsMessage;
+			const dialogueMsg = latestMessage as unknown as DialogueOptionsMessage;
 			return (
 				<div className={containerClasses}>
 					<div className='flex flex-col space-y-3'>
@@ -103,12 +104,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 								<div className='flex items-center'>
 									{opt.icon && <span className='mr-2'>{opt.icon}</span>}
 									<div className='text-left'>
-										<div className='font-semibold'>{opt.title}</div>
-										{opt.description && (
-											<div className='text-xs text-gray-600'>
-												{opt.description}
-											</div>
-										)}
+										<div className='font-semibold'>{opt.label}</div>
 									</div>
 								</div>
 							</Flat3dButton>
@@ -126,7 +122,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 					<div className='w-full'>
 						<div className='mb-2'>
 							<div className="ticker-container">
-								{tickerMsg.buttons.map((button, bidx) => (
+								{tickerMsg.buttons.map((button: TickerButton, bidx) => (
 									<Flat3dContainer
 										key={bidx}
 										whileHover={{ scale: 1.05 }}
@@ -167,7 +163,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 				</div>
 			);
 
-		case 'multiple_choice':
+		case 'multiple-choice':
 			const multipleChoiceMsg = latestMessage as MultipleChoiceMessage;
 			return (
 				<div className={containerClasses}>
@@ -178,17 +174,17 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 									key={idx}
 									id={`multiple-choice-btn-${idx}`}
 									className='flex-1'
-									onClick={() => {
-										if (multipleChoiceMsg.onChoice) {
-											multipleChoiceMsg.onChoice(choice, store);
-										} else {
-											store.addMessage({
-												role: 'user',
-												type: 'text',
-												content: choice,
-											});
-										}
-									}}>
+													onClick={() => {
+														if (multipleChoiceMsg.onChoice) {
+															multipleChoiceMsg.onChoice(choice, store);
+														} else {
+															(store as { addMessage: (message: { role: string; type: string; content: string }) => void }).addMessage({
+																role: 'user',
+																type: 'text',
+																content: choice.value,
+															});
+														}
+													}}>
 									{idx === 0 ? (
 										<>
 											<KeyboardShortcut className='mr-2'>
@@ -202,7 +198,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 											className='mr-2'
 										/>
 									)}
-									<span className='truncate'>{choice}</span>
+														<span className='truncate'>{choice.label}</span>
 								</Flat3dButton>
 							))}
 						</div>
@@ -211,7 +207,7 @@ const CaptionMessages: React.FC<CaptionMessagesProps> = ({
 			);
 
 		case 'slider':
-			const sliderMsg = latestMessage as SliderMessage;
+			const sliderMsg = latestMessage as unknown as SliderMessage;
 			return (
 				<div className={containerClasses}>
 					<div className='w-full flex items-center'>

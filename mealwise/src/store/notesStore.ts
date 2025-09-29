@@ -147,7 +147,7 @@ export const useNotesStore = create<NotesState>()(
       },
       
       deleteNote: async (user, noteId) => {
-        const { savedNotes, currentNoteId, notes, currentNoteTitle } = get();
+        const { savedNotes, currentNoteId } = get();
         
         // If the deleted note is currently being viewed, clear the main view
         if (currentNoteId === noteId) {

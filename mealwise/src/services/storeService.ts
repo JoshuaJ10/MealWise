@@ -222,7 +222,7 @@ class StoreService {
         return [];
       }
       
-      const stores = data.results.map((place: any) => ({
+      const stores = data.results.map((place: { place_id: string; name: string; vicinity: string; geometry: { location: { lat: number; lng: number } } }) => ({
         id: `${chain}_${place.place_id}`,
         name: place.name,
         address: place.vicinity,
@@ -305,7 +305,7 @@ class StoreService {
     const prices: StorePrice[] = [];
     
     // Realistic price ranges for common ingredients
-    const getRealisticPrice = (ingredientName: string, unit: string): number => {
+    const getRealisticPrice = (ingredientName: string, _unit: string): number => {
       const name = ingredientName.toLowerCase();
       
       // Meat prices (per lb)
@@ -532,5 +532,5 @@ export const storeService = new StoreService();
 
 // Make storeService available globally for debugging
 if (typeof window !== 'undefined') {
-  (window as any).storeService = storeService;
+  (window as { storeService?: StoreService }).storeService = storeService;
 }

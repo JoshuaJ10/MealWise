@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Send, Sparkles, Save, ShoppingCart, FileText } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Save, ShoppingCart, FileText } from 'lucide-react';
 import { useNotesStore } from '@/store/notesStore';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';

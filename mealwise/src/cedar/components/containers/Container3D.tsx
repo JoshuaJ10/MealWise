@@ -67,7 +67,7 @@ const Container3D: React.FC<Container3DProps> = ({
 
 	// Combine base style, color override, text color, and inline style from props
 	const colorStyle: React.CSSProperties = color
-		? { backgroundColor: color, borderColor: createBorderColor(color) }
+		? { backgroundColor: color, borderColor: createBorderColor(color, 0.2) }
 		: {};
 	const textStyle: React.CSSProperties = color
 		? { color: getTextColorForBackground(color) }
