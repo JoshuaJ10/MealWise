@@ -79,11 +79,11 @@ export default function SignUp() {
         console.log('Sign up successful:', data);
         router.push('/login?message=Account created successfully! Please log in.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign up error:', error);
       
       // Check if it's a CORS error
-      if (error.message.includes('CORS') || error.message.includes('fetch')) {
+      if (error instanceof Error && (error.message.includes('CORS') || error.message.includes('fetch'))) {
         setErrors({ 
           general: 'Unable to connect to server. Please check your internet connection or try again later.' 
         });

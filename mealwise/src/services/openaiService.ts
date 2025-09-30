@@ -78,6 +78,8 @@ export class OpenAIService {
       const notesContent = await response.text();
       
       return {
+        items: [],
+        totalCost: 0,
         notesUpdate: notesContent,
         message: 'Notes updated successfully'
       };

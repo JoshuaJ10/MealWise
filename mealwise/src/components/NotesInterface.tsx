@@ -1,12 +1,11 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Send, Sparkles, Save, ShoppingCart, FileText } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Send, Save, ShoppingCart, FileText } from 'lucide-react';
 import { useNotesStore } from '@/store/notesStore';
 import { useAuthStore } from '@/store/authStore';
 import { useRouter } from 'next/navigation';
 import { StoreSidebar } from '@/components/layout/StoreSidebar';
 
-export const CedarNotesInterface: React.FC = () => {
+export const NotesInterface: React.FC = () => {
   const { user } = useAuthStore();
   const router = useRouter();
   const [inputValue, setInputValue] = useState('');
@@ -50,7 +49,8 @@ export const CedarNotesInterface: React.FC = () => {
     } catch (error) {
       console.error('Error processing message:', error);
       // Show error in notes
-      updateNotes(notes + '\n\n[Error: ' + error.message + ']');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      updateNotes(notes + '\n\n[Error: ' + errorMessage + ']');
     } finally {
       setIsProcessing(false);
     }

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
-import { GroceryItem, GroceryCategory } from '@/types/grocery';
+// import { GroceryItem, GroceryCategory } from '@/types/grocery';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
 export interface NotesAndGroceryResponse {
-  items: Omit<GroceryItem, 'id'>[];
+  items: Array<{ name: string; category: string; quantity: number; unit: string; price: number }>;
   message: string;
   totalCost: number;
   notesUpdate?: string;
@@ -15,7 +15,7 @@ export interface NotesAndGroceryResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    const { prompt, currentItems = [], currentNotes = '' } = await request.json();
+    const { prompt, currentItems: _currentItems = [], currentNotes = '' } = await request.json();
 
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(

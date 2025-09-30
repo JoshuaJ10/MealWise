@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { CedarNotesInterface } from '@/components/cedar/CedarNotesInterface';
+import { NotesInterface } from '@/components/NotesInterface';
 import { NotesSidebar } from '@/components/layout/NotesSidebar';
 import { useAuthStore } from '@/store/authStore';
 
@@ -36,12 +36,12 @@ export default function Home() {
   return (
     <div className="h-screen bg-amber-50 flex overflow-hidden">
       {/* Sidebar */}
-      <NotesSidebar user={user} />
+      <NotesSidebar user={user || undefined} />
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Main app content */}
-        <CedarNotesInterface />
+        <NotesInterface />
       </div>
     </div>
   );

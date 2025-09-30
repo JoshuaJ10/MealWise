@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Store, StorePrice, StoreSearchResult } from '@/types/store';
+import { StorePrice, StoreSearchResult } from '@/types/store';
 import { storeService } from '@/services/storeService';
 import { MapPin, DollarSign, ShoppingCart, Clock, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 
@@ -54,11 +54,6 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
   const getStorePrices = (storeId: string): StorePrice[] => {
     if (!searchResult) return [];
     return searchResult.prices.filter(p => p.storeId === storeId);
-  };
-
-  const getUniqueIngredients = (): string[] => {
-    if (!searchResult) return [];
-    return [...new Set(searchResult.prices.map(p => p.ingredient))];
   };
 
   const getParsedIngredients = (): string[] => {
@@ -278,7 +273,7 @@ export const StoreSidebar: React.FC<StoreSidebarProps> = ({ notes, isVisible, on
             <ShoppingCart className="w-8 h-8 mx-auto mb-2 text-gray-300" />
             <p className="text-sm">No ingredients found in notes</p>
             <p className="text-xs mt-1">
-              Try adding ingredients like "chicken breast" or "2 lbs rice"
+              Try adding ingredients like &quot;chicken breast&quot; or &quot;2 lbs rice&quot;
             </p>
           </div>
         )}

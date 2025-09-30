@@ -7,7 +7,7 @@ import { Trash2, FileText, Plus } from 'lucide-react';
 
 interface NotesSidebarProps {
   className?: string;
-  user: { username: string };
+  user?: { username: string };
 }
 
 export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user }) => {
@@ -33,7 +33,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
 
   const handleDeleteNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this note?')) {
+    if (confirm('Are you sure you want to delete this note?') && user) {
       deleteNote(user, noteId);
     }
   };

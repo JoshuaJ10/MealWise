@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/store/authStore';
 
-export default function Login() {
+function LoginForm() {
   const [formData, setFormData] = useState({
     username: '',
     password: ''
@@ -107,11 +107,11 @@ export default function Login() {
         // Redirect to home page after successful login
         router.push('/');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error);
       
       // Check if it's a CORS error
-      if (error.message.includes('CORS') || error.message.includes('fetch')) {
+      if (error instanceof Error && (error.message.includes('CORS') || error.message.includes('fetch'))) {
         setErrors({ 
           general: 'Unable to connect to server. Please check your internet connection or try again later.' 
         });
@@ -233,7 +233,7 @@ export default function Login() {
 
           <div className="text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link href="/signup" className="font-medium text-green-600 hover:text-green-500">
                 Create one here
               </Link>
@@ -243,5 +243,13 @@ export default function Login() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Login() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
