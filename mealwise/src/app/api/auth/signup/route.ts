@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const API_BASE = "https://5ts2r78670.execute-api.us-east-1.amazonaws.com/Food";
+const API_BASE = "process.env.AWS_NOTES_URL";
 
 export async function POST(request: NextRequest) {
   try {
