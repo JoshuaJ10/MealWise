@@ -33,7 +33,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({ className = '', user
 
   const handleDeleteNote = (e: React.MouseEvent, noteId: string) => {
     e.stopPropagation();
-    if (confirm('Are you sure you want to delete this note?')) {
+    if (confirm('Are you sure you want to delete this note?') && user) {
       deleteNote(user, noteId);
     }
   };
